@@ -6,9 +6,9 @@ test('var turtle = new Turtle(); // should set default position and direction', 
 
 test('turtle.clear(); // should reset position and direction', function () {
     var t = new Turtle();
-    t.setPosition([Math.floor(Math.random()*201)-100, 
-		   Math.floor(Math.random()*201)-100]);
-    t.setDirection(Math.floor(Math.random()*365));
+    function random(i, j) {return Math.floor(Math.random()*(j-i+1))+i}
+    t.setPosition([random(-100,100), random(-100,100)]);
+    t.setDirection(random(0,365));
     t.clear();
     deepEqual(t.position, [0, 0], 'init position');
     equal(t.direction, 90, 'init direction');

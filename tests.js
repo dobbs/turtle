@@ -50,32 +50,16 @@ test('turtle.move(pixels); // should change turtle.position', function () {
     equal(Math.round(t.position[1]), 30);
 });
 
-test('view = new View(canvas); // queue turtle commands', function () {
+test('var commands = new Commands(); // should queue turtle commands', function () {
     var canvas = document.getElementById('view');
-    var v = new View(canvas);
-    v.clear();
-    equal(v.queue.length, 1);
-    v.penDown();
-    equal(v.queue.length, 2);
+    var q = new Commands();
+    q.setPosition(Math.floor(canvas.width / 2), Math.floor(canvas.height /2));
+    equal(q.length, 1);
+    q.penDown();
+    equal(q.length, 2);
     for (var i=3; i--;) {
-	v.move(50);
-     	v.turn(60);
+     	q.turn(-120);
+	q.move(50);
     }
-    equal(v.queue.length, 8);
-
-//    var ctx = canvas.getContext("2d");  
-//    ctx.fillStyle = "rgb(200,0,0)";  
-});
-
-test('view.run(); // iterate and execute queue of commands', function () {
-    var canvas = document.getElementById('view');
-    var v = new View(canvas);
-    v.setPosition([60,60]);
-    v.penDown();
-    for (var i=3; i--;) {
-     	v.turn(120);
-	v.move(50);
-    }
-    v.run();
-    equal(v.queue.length, 8);
+    equal(q.length, 8);
 });

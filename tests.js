@@ -70,13 +70,12 @@ test('view = new View(canvas); // queue turtle commands', function () {
 test('view.run(); // iterate and execute queue of commands', function () {
     var canvas = document.getElementById('view');
     var v = new View(canvas);
-//    v.clear();
     v.setPosition([60,60]);
     v.penDown();
     for (var i=3; i--;) {
      	v.turn(120);
 	v.move(50);
-     }
+    }
     v.run();
     equal(v.queue.length, 8);
 });

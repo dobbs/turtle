@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>von Koch snowflake</title>
+<script type="text/javascript" src="turtle.js"></script>
+</head>
+<body>
+<div><canvas id="view" width="300" height="200"></canvas></div>
+</body>
+<script type="text/javascript">
+var canvas = document.getElementById('view');
+var q = new Commands();
+function drawLine (pixels, depth) {
+  if (depth > 0) {
+    drawLine(pixels/3, depth-1);
+    q.turn(60);
+    drawLine(pixels/3, depth-1);
+    q.turn(-120);
+    drawLine(pixels/3,depth-1);
+    q.turn(60);
+    drawLine(pixels/3,depth-1);
+  } else {
+    q.move(pixels);
+  }
+  return;
+}
+var v = new CanvasView(canvas);
+q.setPosition(150, 100);  
+q.penDown();
+for (var i=3; i--;) {
+    drawLine(90,3);
+    q.turn(-120);
+}
+q.play(v);
+</script>
+</html>

@@ -7,16 +7,16 @@ test('var turtle = new Turtle(); // should set default position and direction', 
 test('turtle.clear(); // should reset position and direction', function () {
     var t = new Turtle();
     function random(i, j) {return Math.floor(Math.random()*(j-i+1))+i}
-    t.setPosition([random(-100,100), random(-100,100)]);
+    t.setPosition(random(-100,100), random(-100,100));
     t.setDirection(random(0,365));
     t.clear();
     deepEqual(t.position, [0, 0], 'init position');
     equal(t.direction, 90, 'init direction');
 });
 
-test('turtle.setPosition([x, y]); // should change turtle.position', function () {
+test('turtle.setPosition(x, y); // should change turtle.position', function () {
     var t = new Turtle();
-    t.setPosition([5, 20]);
+    t.setPosition(5, 20);
     deepEqual(t.position, [5, 20], 'setPosition');
 });
 
@@ -51,9 +51,8 @@ test('turtle.move(pixels); // should change turtle.position', function () {
 });
 
 test('var commands = new Commands(); // should queue turtle commands', function () {
-    var canvas = document.getElementById('view');
     var q = new Commands();
-    q.setPosition(Math.floor(canvas.width / 2), Math.floor(canvas.height /2));
+    q.setPosition(60, 60);
     equal(q.length, 1);
     q.penDown();
     equal(q.length, 2);
@@ -62,4 +61,29 @@ test('var commands = new Commands(); // should queue turtle commands', function 
 	q.move(50);
     }
     equal(q.length, 8);
+});
+
+test('commands.play(view); // should execute each command against the view', function () {
+    var q = new Commands();
+    q.setPosition(60, 60);
+    q.penDown();
+    for (var i=3; i--;) {
+     	q.turn(-120);
+	q.move(50);
+    }
+    var v = new LogView(window.console);
+    q.play(v);
+});
+
+test('CanvasView(); // should draw turtle tracks on the canvas', function () {
+    var q = new Commands();
+    q.setPosition(60, 60);
+    q.penDown();
+    for (var i=3; i--;) {
+     	q.turn(-120);
+	q.move(50);
+    }
+    var v = new CanvasView(document.getElementById('view'));
+    var l = new LogView(window.console);
+    q.play(v,l);
 });

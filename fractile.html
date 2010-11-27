@@ -24,13 +24,32 @@ function drawLine (pixels, depth) {
   }
   return;
 }
-var v = new CanvasView(canvas);
+function fractalLine(pixels, depth, turns) {
+    if (depth > 0) {
+        for (var i = 0; i < turns.length; i++) {
+            q.turn(turns[i]);
+            fractalLine(pixels/3, depth-1, turns);
+        }
+    } else {
+        q.move(pixels);
+    }
+}
+function von_koch (pixels, depth) {
+  for (var i=3; i--;) {
+        fractalLine(pixels, depth, [0, 60, -120, 60]);
+        q.turn(-120);
+   }
+}
+function peano (pixels, depth) {
+    fractalLine(pixels, depth, [0, 90, -90, -90, -90, 90, 90, 90, -90]);
+}
 q.setPosition(150, 100);  
 q.penDown();
-for (var i=3; i--;) {
-    drawLine(90,3);
-    q.turn(-120);
-}
+von_koch(90, 3);
+q.penUp();
+q.setPosition(250, 100);
+peano(60, 3);
+var v = new CanvasView(canvas); 
 q.play(v);
 </script>
 </html>

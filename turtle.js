@@ -95,7 +95,7 @@
 	};
 	return self;
     }
-    function LogView (out) {
+    function LogView (out) { // for use with FireBug console or similar
 	var self = this;
 	self.clear = function () {
 	    out.log('clear();');
@@ -125,7 +125,6 @@
     function CanvasView (canvas) {
 	var self = this;
 	self.turtle = new Turtle();
-	console.log('self.turtle='+self.turtle);
 	self.canvas = canvas;
 	self.ctx = canvas.getContext('2d');
 	self.penIsDown = false;

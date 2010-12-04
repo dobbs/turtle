@@ -37,12 +37,12 @@
 	return;
     }
     function drawFractal(canvas) {
-	q.setPosition(150, 100);  
+	q.setPosition(30, 0);  
 	q.penDown();
 	von_koch(90, 3);
 	q.penUp();
-	q.setPosition(250, 100);
-	peano(60, 3);
+	q.setPosition(155, 0);
+	peano(90, 3);
 	var v = new CanvasView(canvas); 
 	q.play(v);
 	return;

@@ -93,6 +93,48 @@
 		}
 	    }
 	};
+        self.playback = function (opts) {
+            opts = jQuery.extend({
+                    view: null,
+                    interval: 100,
+                    opsPerStep: 10
+                }, opts);
+
+            if(!opts.view) {
+                console.log('No rendering target found!');
+
+                return;
+            }
+
+            var loop = function(cb, delay) {
+                var intervalId;
+
+                var cycle = function() {
+                    var ret = cb();
+
+                    if(ret == false) {
+                        clearInterval(intervalId);
+                    }
+                }
+
+                intervalId = setInterval(cycle, delay);
+            };
+
+            var i = 0;
+            loop(function() {
+                while(i < self.length) {
+                    self[i].apply(self, [opts.view]);
+
+                    i++;
+
+                    if(!(i % opts.opsPerStep)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }, opts.interval);
+        };
 	return self;
     }
     function LogView (out) { // for use with FireBug console or similar

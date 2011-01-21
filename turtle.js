@@ -3,7 +3,7 @@
 	var self = this;
 	self.position = [0, 0];
 	self.direction = 90;
-	function resetConfig() {
+	function clear () {
 	    setPosition(0, 0);
 	    setDirection(90);
 	    return self;
@@ -18,9 +18,6 @@
 		self.direction += 360;
 	    }
 	    return self;
-	}
-	function clear () {
-	    return resetConfig();
 	}
 	function turn(degrees) {
 	    setDirection(self.direction + parseFloat(degrees));

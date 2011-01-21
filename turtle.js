@@ -94,11 +94,8 @@
 	    }
 	};
         self.playback = function (opts) {
-            opts = jQuery.extend({
-                    view: null,
-                    interval: 100,
-                    opsPerStep: 10
-                }, opts);
+            opts.interval = opts.interval || 100;
+            opts.opsPerStep = opts.opsPerStep || 10;
 
             if(!opts.view) {
                 console.log('No rendering target found!');

@@ -44,8 +44,7 @@
 	q.setPosition(155, 0);
 	peano(90, 3);
 	var v = new CanvasView(canvas);
-        //q.play(v);
-	q.playback({view: v, interval: 100, opsPerStep: 25});
+	q.playback({view: v, interval: 5, opsPerStep: 1});
 	return;
     };
     jQuery(function () {

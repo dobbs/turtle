@@ -4,6 +4,12 @@ test('var turtle = new Turtle(); // should set default position and direction', 
     equal(t.direction, 0, 'init direction');
 });
 
+test('var turtle = new Turtle(60, [50, 40]); // should set default position and direction', function () {
+    var t = new Turtle(60, [50, 40]);
+    deepEqual(t.position, [50, 40], 'init position');
+    equal(t.direction, 60, 'init direction');
+});
+
 test('turtle.clear(); // should reset position and direction', function () {
     var t = new Turtle();
     function random(i, j) {return Math.floor(Math.random()*(j-i+1))+i}

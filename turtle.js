@@ -1,11 +1,18 @@
 (function (window) {
     function Turtle () {
 	var self = this;
-	self.position = [0, 0];
-	self.direction = 0;
+	self.clear_direction = 0;
+	self.clear_x = 0;
+	self.clear_y = 0;
+	if (arguments.length == 2) {
+	    self.clear_direction = arguments[0];
+	    self.clear_x = arguments[1][0];
+	    self.clear_y = arguments[1][1];
+	} else {
+	}
 	function clear () {
-	    setPosition(0, 0);
-	    setDirection(0);
+	    setDirection(self.clear_direction);
+	    setPosition(self.clear_x, self.clear_y);
 	    return self;
 	}
 	function setPosition (x, y) {
@@ -40,6 +47,7 @@
 	self.clear = clear;
 	self.turn = turn;
 	self.move = move;
+	self.clear();
     }
     function Commands () {
 	var self = [];

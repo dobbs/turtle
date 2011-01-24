@@ -9,7 +9,7 @@
 	    return self;
 	}
 	function setPosition (x, y) {
-	    self.position = [x, y];
+	    self.position = [parseFloat(x), parseFloat(y)];
 	    return self;
 	};
 	function setDirection(newDirection) {
@@ -83,6 +83,13 @@
 		return;
 	    });
 	};
+	self.setDirection = function () {
+	    var degrees = arguments[0];
+	    self.push(function (view) {
+		view.setDirection(degrees);
+		return;
+	    });
+        };
 	self.play = function () {
 	    for (var i = 0; i < self.length; i++) {
 		for (var j = 0; j < arguments.length; j++) {
@@ -157,6 +164,10 @@
 	    out.log('setPosition('+x+', '+y+');');
 	    return;
 	};
+	self.setDirection = function (degrees) {
+	    out.log('setDirection('+degrees+');');
+	    return;
+	};
     }
     function CanvasView (canvas) {
 	var self = this;
@@ -201,6 +212,10 @@
 	    self.ctx.moveTo(x, y);
 	    return;
 	};
+        self.setDirection = function(degrees) {
+	    self.turtle.setDirection(degrees);
+	    return;
+        };
     }
     window.Turtle = Turtle;
     window.Commands = Commands;

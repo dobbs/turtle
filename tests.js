@@ -66,6 +66,7 @@ test('var commands = new Commands(); // should queue turtle commands', function 
 test('commands.play(view); // should execute each command against the view', function () {
     var q = new Commands();
     q.setPosition(60, 60);
+    q.setDirection(60);
     q.penDown();
     for (var i=3; i--;) {
      	q.turn(-120);
@@ -78,6 +79,7 @@ test('commands.play(view); // should execute each command against the view', fun
 test('CanvasView(); // should draw turtle tracks on the canvas', function () {
     var q = new Commands();
     q.setPosition(60, 60);
+    q.setDirection(60);
     q.penDown();
     for (var i=3; i--;) {
      	q.turn(-120);

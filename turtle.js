@@ -179,7 +179,10 @@
     }
     function CanvasView (canvas) {
 	var self = this;
-	self.turtle = new Turtle();
+	self.turtle = new Turtle(0, [
+	    parseInt(canvas.width/2), 
+	    parseInt(canvas.height/2)
+	]);
 	self.canvas = canvas;
 	self.ctx = canvas.getContext('2d');
 	self.penIsDown = false;

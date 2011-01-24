@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>interactive turtle graphics</title>
+<script type="text/javascript" src="turtle.js"></script>
+<style type="text/css">
+canvas {border: 1pt solid black;}
+.interactive {float: left; margin-right: 1em;}
+.example p {margin: 0;}
+.example p:first-child {margin-bottom: 1em;}
+</style>
+</head>
+<body>
+<div class="interactive">
+<canvas id="canvas" width="230" height="200"></canvas>
+<form>
+<input id="commandline" type="text" size="40" name="commandline">
+</form>
+</div>
+<div class="example">
+<p>Commands include:</p>
+<p><code>setPosition <em>x</em> <em>y</em></code></p>
+<p><code>setDirection <em>degrees</em></code></p>
+<p><code>penUp</code></p>
+<p><code>penDown</code></p>
+<p><code>move <em>pixels</em></code></p>
+<p><code>turn <em>degrees</em></code></p>
+<p><code>clear</code></p>
+</div>  
+</body>
+<script type="text/javascript"><!--
+(function () {
+var canvas = document.getElementById('canvas');
+var commandline = document.getElementById('commandline');
+var view = new CanvasView(canvas);
+var t = view.turtle;
+function interpreter () {
+    var args = commandline.value.split(/[ ,.()]/);
+    var command = args.shift();
+    if (typeof(view[command]) == 'function') {
+        view[command].apply(view, args);
+    }
+    commandline.focus();
+    return false;
+}
+commandline.form.onsubmit = interpreter;
+commandline.focus();
+window.onclick = function () {commandline.focus()}
+return;
+})();
+--></script>
+</html>

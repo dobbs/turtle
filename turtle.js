@@ -2,10 +2,10 @@
     function Turtle () {
 	var self = this;
 	self.position = [0, 0];
-	self.direction = 90;
+	self.direction = 0;
 	function clear () {
 	    setPosition(0, 0);
-	    setDirection(90);
+	    setDirection(0);
 	    return self;
 	}
 	function setPosition (x, y) {

@@ -1,7 +1,7 @@
 test('var turtle = new Turtle(); // should set default position and direction', function () {
     var t = new Turtle();
     deepEqual(t.position, [0, 0], 'init position');
-    equal(t.direction, 90, 'init direction');
+    equal(t.direction, 0, 'init direction');
 });
 
 test('turtle.clear(); // should reset position and direction', function () {
@@ -11,7 +11,7 @@ test('turtle.clear(); // should reset position and direction', function () {
     t.setDirection(random(0,365));
     t.clear();
     deepEqual(t.position, [0, 0], 'init position');
-    equal(t.direction, 90, 'init direction');
+    equal(t.direction, 0, 'init direction');
 });
 
 test('turtle.setPosition(x, y); // should change turtle.position', function () {
@@ -35,11 +35,11 @@ test('turtle.setDirection(degrees); // should change turtle.direction', function
 test('turtle.turn(degrees); // should change turtle.direction', function () {
     var t = new Turtle();
     t.turn(30);
-    equal(t.direction, 120);
+    equal(t.direction, 30);
     t.turn(-45);
-    equal(t.direction, 75);
-    t.turn(-90);
     equal(t.direction, 345);
+    t.turn(90);
+    equal(t.direction, 75);
 });
 
 test('turtle.move(pixels); // should change turtle.position', function () {

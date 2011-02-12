@@ -75,7 +75,7 @@ describe("Turtle", function () {
     });
 
     describe("move(pixels)", function () {
-	it("should change turtle.position from its position, in its direction", function () {
+	it("should move the turtle.position given pixels in the turtle.direction", function () {
 	    this.addMatchers({
 		toRoundTo: function (expected) {
 		    return Math.round(this.actual) === expected;

@@ -105,32 +105,37 @@ describe("TurtlePath", function () {
 	    path.move(30);
 	    expect(path.position()).toEqual([50, 30]);
 	});
-	it("should should have one vertex that references itself", function () {
-	    expect(path.vertexes.length).toEqual(1);
-	    expect(path.vertexes[0].state).toEqual(path.state);
+	it("should should have an empty list of vertexes", function () {
+	    expect(path.vertexes.length).toEqual(0);
 	});
     });
     describe("addVertex", function () {
 	beforeEach(function(){path.addVertex()});
 	it("should increase the number of vertexes by 1", function () {
-	    expect(path.vertexes.length).toEqual(2);
+	    expect(path.vertexes.length).toEqual(1);
 	});
 	it("should use the current direction and position for the new vertex", function () {
 	    expect(path.vertexes[0].position()).toEqual(path.vertexes[0].position());
 	});
-	it("should become the new state for the path", function () {
-	    path.move(50);
-	    expect(path.position()).toEqual([50, 0])
-	    expect(path.vertexes[1].position()).toEqual([50, 0]);
-	    expect(path.vertexes[0].position()).toEqual([0, 0]);
+    });
+    describe("penDown", function () {
+	it("should add a vertex at the current position", function () {
+	    path.penUp();
+	    path.turn(90);
+	    path.move(25);
+	    path.penDown();
+	    expect(path.vertexes.length).toEqual(1);
+	    expect(path.vertexes[0].position()).toEqual(path.position());
+	    expect(path.vertexes[0].direction()).toEqual(path.direction());
 	});
     });
     describe("move", function () {
 	it("should only collect vertexes if the pen is down", function () {
 	    path.penUp();
 	    path.move(50);
-	    expect(path.vertexes.length).toEqual(1);
+	    expect(path.vertexes.length).toEqual(0);
 	    path.penDown();
+	    expect(path.vertexes.length).toEqual(1);
 	    path.move(50);
 	    expect(path.vertexes.length).toEqual(2);
 	});
@@ -190,6 +195,8 @@ describe("TurtlePath", function () {
 	    path.render({
 		getContext: function (type) {return context}
 	    });
+	    expect(context.translate).wasCalled();
+	    expect(context.rotate).wasCalled();
 	    expect(context.beginPath).wasCalled();
 	    expect(context.moveTo).wasCalledWith(path.vertexes[0].x(), path.vertexes[0].y());
 	    expect(context.lineTo).wasCalledWith(path.vertexes[1].x(), path.vertexes[1].y());
@@ -199,12 +206,14 @@ describe("TurtlePath", function () {
 	    expect(context.stroke).wasCalled();
 	});
 
-	it("should use the head of the path for canvas translation and rotaton", function () {
+	it("should use position and direction for canvas translation and rotaton", function () {
 	    path.setPosition(100,100);
+	    path.setDirection(20);
 	    path.render({
 		getContext: function() {return context},
 	    });
 	    expect(context.translate).wasCalledWith(100, 100);
+	    expect(context.rotate).wasCalledWith(Math.PI*20/180);
 	});
     });
 });

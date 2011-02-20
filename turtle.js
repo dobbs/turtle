@@ -21,6 +21,9 @@
 	direction: function () {
 	    return this.state.direction;
 	},
+	directionInRadians: function () {
+	    return this.direction()*Math.PI/180
+	},
 	position: function () {
 	    return [this.x(), this.y()];
 	},
@@ -47,18 +50,18 @@
 	move: function (pixels) {
 	    var p = parseFloat(pixels);
 	    this.setPosition(
-		Math.cos(this.direction()*Math.PI/180) * p + this.x(),
-		Math.sin(this.direction()*Math.PI/180) * p + this.y()
+		Math.cos(this.directionInRadians()) * p + this.x(),
+		Math.sin(this.directionInRadians()) * p + this.y()
 	    );
 	    return this;
 	}
     });
     function TurtlePath() {
-	var head = new Turtle(arguments);
+	var turtle = new Turtle(arguments);
 	extend(this, {
-	    state: head.state,
-	    home: head.home,
-	    vertexes: [head]
+	    state: turtle.state,
+	    home: turtle.home,
+	    vertexes: []
 	});
 	return this;
     }
@@ -70,30 +73,31 @@
 		home: extend({}, this.home)
 	    });
 	    this.vertexes.push(vertex);
-	    return extend(this, {
-		state: vertex.state,
-		home: vertex.home
-	    });
+	    return this;
 	},
 	penDown: function () {
+	    this.addVertex();
 	    this.penIsDown = true;
 	},
 	penUp: function () {
 	    this.penIsDown = false;
 	},
 	move: function (pixels) {
+	    Turtle.prototype.move.apply(this, arguments);
 	    if (this.penIsDown) {
 		this.addVertex();
 	    }
-	    Turtle.prototype.move.apply(this, arguments);
+	    return this;
 	},
 	render: function (canvas) {
-	    var maxidx = this.vertexes.length - 1;
+	    console.log('render()');
+	    var maxidx = this.vertexes.length;
 	    var ctx = canvas.getContext('2d');
 	    ctx.beginPath();
-	    ctx.translate(this.vertexes[maxidx].x(), this.vertexes[maxidx].y());
-	    ctx.moveTo(0, 0);
-	    for(var i = maxidx - 1; i--;) {
+	    ctx.translate(this.x(), this.y());
+	    ctx.rotate(this.directionInRadians());
+	    ctx.moveTo(this.vertexes[0].x(), this.vertexes[0].y());
+	    for(var i = 1; i < maxidx; i++) {
 		ctx.lineTo(this.vertexes[i].x(), this.vertexes[i].y());
 	    }
 	    ctx.stroke();

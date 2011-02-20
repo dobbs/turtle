@@ -1,13 +1,13 @@
 test('var turtle = new Turtle(); // should set default position and direction', function () {
     var t = new Turtle();
-    deepEqual(t.position, [0, 0], 'init position');
-    equal(t.direction, 0, 'init direction');
+    deepEqual(t.position(), [0, 0], 'init position');
+    equal(t.direction(), 0, 'init direction');
 });
 
 test('var turtle = new Turtle(60, [50, 40]); // should set default position and direction', function () {
     var t = new Turtle(60, [50, 40]);
-    deepEqual(t.position, [50, 40], 'init position');
-    equal(t.direction, 60, 'init direction');
+    deepEqual(t.position(), [50, 40], 'init position');
+    equal(t.direction(), 60, 'init direction');
 });
 
 test('turtle.clear(); // should reset position and direction', function () {
@@ -16,44 +16,44 @@ test('turtle.clear(); // should reset position and direction', function () {
     t.setPosition(random(-100,100), random(-100,100));
     t.setDirection(random(0,365));
     t.clear();
-    deepEqual(t.position, [0, 0], 'init position');
-    equal(t.direction, 0, 'init direction');
+    deepEqual(t.position(), [0, 0], 'init position');
+    equal(t.direction(), 0, 'init direction');
 });
 
 test('turtle.setPosition(x, y); // should change turtle.position', function () {
     var t = new Turtle();
     t.setPosition(5, 20);
-    deepEqual(t.position, [5, 20], 'setPosition');
+    deepEqual(t.position(), [5, 20], 'setPosition');
 });
 
 test('turtle.setDirection(degrees); // should change turtle.direction', function () {
     var t = new Turtle();
     t.setDirection(30);
-    equal(t.direction, 30);
+    equal(t.direction(), 30);
     t.setDirection(345);
-    equal(t.direction, 345);
+    equal(t.direction(), 345);
     t.setDirection(400);
-    equal(t.direction, 40);
+    equal(t.direction(), 40);
     t.setDirection(-30);
-    equal(t.direction, 330);
+    equal(t.direction(), 330);
 });
 
 test('turtle.turn(degrees); // should change turtle.direction', function () {
     var t = new Turtle();
     t.turn(30);
-    equal(t.direction, 30);
+    equal(t.direction(), 30);
     t.turn(-45);
-    equal(t.direction, 345);
+    equal(t.direction(), 345);
     t.turn(90);
-    equal(t.direction, 75);
+    equal(t.direction(), 75);
 });
 
 test('turtle.move(pixels); // should change turtle.position', function () {
     var t = new Turtle();
     t.setDirection(37); // smallest angle of a 3-4-5 right-triangle
     t.move(50);
-    equal(Math.round(t.position[0]), 40);
-    equal(Math.round(t.position[1]), 30);
+    equal(Math.round(t.x()), 40);
+    equal(Math.round(t.y()), 30);
 });
 
 test('var commands = new Commands(); // should queue turtle commands', function () {

@@ -248,15 +248,12 @@
 	self.move = function (pixels) {
 	    if (self.penIsDown) {
 		self.ctx.beginPath();
-		self.ctx.moveTo(self.turtle.position[0],
-				self.turtle.position[1]);
+		self.ctx.moveTo(self.turtle.x(), self.turtle.y());
 		self.turtle.move(pixels);
-		self.ctx.lineTo(self.turtle.position[0],
-				self.turtle.position[1]);
+		self.ctx.lineTo(self.turtle.x(), self.turtle.y());
 		self.ctx.stroke();
 	    } else {
-		self.ctx.moveTo(self.turtle.position[0],
-				self.turtle.position[1]);
+		self.ctx.moveTo(self.turtle.x(), self.turtle.y());
 	    }
 	    return;
 	};

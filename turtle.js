@@ -1,54 +1,59 @@
-(function (window) {
-    function Turtle () {
-	var self = this;
-	self.clear_direction = 0;
-	self.clear_x = 0;
-	self.clear_y = 0;
-	if (arguments.length == 2) {
-	    self.clear_direction = arguments[0];
-	    self.clear_x = arguments[1][0];
-	    self.clear_y = arguments[1][1];
-	} else {
-	}
-	function clear () {
-	    setDirection(self.clear_direction);
-	    setPosition(self.clear_x, self.clear_y);
-	    return self;
-	}
-	function setPosition (x, y) {
-	    self.position = [parseFloat(x), parseFloat(y)];
-	    return self;
-	};
-	function setDirection(newDirection) {
-	    self.direction = parseFloat(newDirection) % 360;
-	    if (self.direction < 0) {
-		self.direction += 360;
-	    }
-	    return self;
-	}
-	function turn(degrees) {
-	    setDirection(self.direction + parseFloat(degrees));
-	    return self;
-	}
-	function move(length) {
-	    var l = parseFloat(length);
-	    setPosition(
-		(Math.cos(directionInRadians()) * l) + self.position[0],
-		(Math.sin(directionInRadians()) * l) + self.position[1]
-	    );
-	    return self;
-	}
-	function directionInRadians() {
-	    return self.direction*Math.PI/180
-	}
-	// public methods
-	self.setPosition = setPosition;
-	self.setDirection = setDirection;
-	self.clear = clear;
-	self.turn = turn;
-	self.move = move;
-	self.clear();
+(function (window, document, undefined) {
+    function extend(left, right) {for (var key in right) left[key] = right[key]; return left;}
+    function Turtle() {
+	extend(this, {
+	    state: {},
+	    home: (arguments.length == 2) ? {
+		direction: arguments[0],
+		x: arguments[1][0], 
+		y: arguments[1][1]
+	    } : {direction: 0, x: 0, y: 0}
+	});
+	this.clear();
+	return this;
     }
+    extend(Turtle.prototype, {
+	clear: function () {
+	    this.setDirection(this.home.direction);
+	    this.setPosition(this.home.x, this.home.y);
+	    return this;
+	},
+	direction: function () {
+	    return this.state.direction;
+	},
+	position: function () {
+	    return [this.x(), this.y()];
+	},
+	x: function () {
+	    return this.state.x;
+	},
+	y: function () {
+	    return this.state.y;
+	},
+	setDirection: function (degrees) {
+	    this.state.direction = parseFloat(degrees) % 360;
+	    (this.state.direction < 0) && (this.state.direction += 360);
+	    return this;
+	},
+	setPosition: function (x, y) {
+	    this.state['x'] = parseFloat(x);
+	    this.state['y'] = parseFloat(y);
+	    return this;
+	},
+	turn: function (degrees) {
+	    this.setDirection(this.state.direction + parseFloat(degrees));
+	    return this;
+	},
+	move: function (pixels) {
+	    var p = parseFloat(pixels);
+	    this.setPosition(
+		Math.cos(this.direction()*Math.PI/180) * p + this.x(),
+		Math.sin(this.direction()*Math.PI/180) * p + this.y()
+	    );
+	    return this;
+	}
+    });
+    
     function Commands () {
 	var self = [];
 	self.clear = function () {
@@ -232,4 +237,4 @@
     window.Commands = Commands;
     window.LogView = LogView;
     window.CanvasView = CanvasView;
-})(this);
+})(this, this.document);

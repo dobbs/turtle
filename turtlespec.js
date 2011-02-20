@@ -91,11 +91,6 @@ describe("Turtle", function () {
 });
 
 describe("TurtlePath", function () {
-	    this.addMatchers({
-		toRoundTo: function (expected) {
-		    return Math.round(this.actual) === expected;
-		},
-	    });
     var path;
     beforeEach(function () {
 	path = new TurtlePath();
@@ -142,6 +137,11 @@ describe("TurtlePath", function () {
     });
 
     it("should store the vertexes of the path as an ordered collection of turtles", function () {
+	this.addMatchers({
+	    toRoundTo: function (expected) {
+		return Math.round(this.actual) === expected;
+	    },
+	});
 	path.penDown();
 	path.move(9);
 	path.turn(180 - 53);
@@ -156,12 +156,55 @@ describe("TurtlePath", function () {
 	expect(path.direction()).toEqual(90);
 	expect(path.vertexes[0].position()).toEqual([0, 0]);
 	expect(path.vertexes[1].position()).toEqual([9, 0]);
-	expect(path.vertexes[2].x()).toRoundTo(12);
-	expect(path.vertexes[2].y()).toRoundTo(0);
-	expect(path.vertexes[3].x()).toRoundTo(0);
-	expect(path.vertexes[3].y()).toRoundTo(-9);
+	expect(path.vertexes[2].x()).toRoundTo(0);
+	expect(path.vertexes[2].y()).toRoundTo(12);
+	expect(path.vertexes[3].x()).toRoundTo(-9);
+	expect(path.vertexes[3].y()).toRoundTo(0);
 	expect(path.vertexes[4].x()).toRoundTo(0);
 	expect(path.vertexes[4].y()).toRoundTo(0);
     }); 
 
+    describe("render", function () {
+	var context;
+	beforeEach(function () {
+	    path.penDown();
+	    path.move(9);
+	    path.turn(180 - 53);
+	    path.move(15);
+	    path.turn(180 - 37 - 37);
+	    path.move(15);
+	    path.turn(180 - 53);
+	    path.move(9);
+	    path.turn(90);
+	    path.penUp();
+	    context = jasmine.createSpyObj('context', [
+		'beginPath',
+		'moveTo',
+		'lineTo',
+		'stroke',
+		'translate',
+		'rotate'
+	    ]);
+	});
+	it("should render a polygon to the given canvas", function () {
+	    path.render({
+		getContext: function (type) {return context}
+	    });
+	    expect(context.beginPath).wasCalled();
+	    expect(context.moveTo).wasCalledWith(path.vertexes[0].x(), path.vertexes[0].y());
+	    expect(context.lineTo).wasCalledWith(path.vertexes[1].x(), path.vertexes[1].y());
+	    expect(context.lineTo).wasCalledWith(path.vertexes[2].x(), path.vertexes[2].y());
+	    expect(context.lineTo).wasCalledWith(path.vertexes[3].x(), path.vertexes[3].y());
+	    expect(context.lineTo).wasCalledWith(path.vertexes[4].x(), path.vertexes[4].y());
+	    expect(context.stroke).wasCalled();
+	});
+
+	it("should use the head of the path for canvas translation and rotaton", function () {
+	    path.setPosition(100,100);
+	    path.render({
+		getContext: function() {return context},
+	    });
+	    expect(context.translate).wasCalledWith(100, 100);
+	});
+    });
 });

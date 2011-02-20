@@ -86,6 +86,17 @@
 		this.addVertex();
 	    }
 	    Turtle.prototype.move.apply(this, arguments);
+	},
+	render: function (canvas) {
+	    var maxidx = this.vertexes.length - 1;
+	    var ctx = canvas.getContext('2d');
+	    ctx.beginPath();
+	    ctx.translate(this.vertexes[maxidx].x(), this.vertexes[maxidx].y());
+	    ctx.moveTo(0, 0);
+	    for(var i = maxidx - 1; i--;) {
+		ctx.lineTo(this.vertexes[i].x(), this.vertexes[i].y());
+	    }
+	    ctx.stroke();
 	}
     });
     function Commands () {

@@ -36,8 +36,8 @@
 	    return this;
 	},
 	setPosition: function (x, y) {
-	    this.state['x'] = parseFloat(x);
-	    this.state['y'] = parseFloat(y);
+	    this.state.x = parseFloat(x);
+	    this.state.y = parseFloat(y);
 	    return this;
 	},
 	turn: function (degrees) {
@@ -53,7 +53,41 @@
 	    return this;
 	}
     });
-    
+    function TurtlePath() {
+	var head = new Turtle(arguments);
+	extend(this, {
+	    state: head.state,
+	    home: head.home,
+	    vertexes: [head]
+	});
+	return this;
+    }
+    extend(TurtlePath.prototype, Turtle.prototype);
+    extend(TurtlePath.prototype, {
+	addVertex: function() {
+	    var vertex = extend(new Turtle(), {
+		state: extend({}, this.state),
+		home: extend({}, this.home)
+	    });
+	    this.vertexes.push(vertex);
+	    return extend(this, {
+		state: vertex.state,
+		home: vertex.home
+	    });
+	},
+	penDown: function () {
+	    this.penIsDown = true;
+	},
+	penUp: function () {
+	    this.penIsDown = false;
+	},
+	move: function (pixels) {
+	    if (this.penIsDown) {
+		this.addVertex();
+	    }
+	    Turtle.prototype.move.apply(this, arguments);
+	}
+    });
     function Commands () {
 	var self = [];
 	self.clear = function () {
@@ -234,6 +268,7 @@
         };
     }
     window.Turtle = Turtle;
+    window.TurtlePath = TurtlePath;
     window.Commands = Commands;
     window.LogView = LogView;
     window.CanvasView = CanvasView;

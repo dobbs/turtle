@@ -89,3 +89,79 @@ describe("Turtle", function () {
 	});
     });
 });
+
+describe("TurtlePath", function () {
+	    this.addMatchers({
+		toRoundTo: function (expected) {
+		    return Math.round(this.actual) === expected;
+		},
+	    });
+    var path;
+    beforeEach(function () {
+	path = new TurtlePath();
+    });
+    describe("new", function () {
+	it("should walk like a Turtle", function () {
+	    expect(path.position()).toEqual([0, 0]);
+	    expect(path.direction()).toEqual(0);
+	    path.move(50);
+	    expect(path.position()).toEqual([50, 0]);
+	    path.turn(90);
+	    path.move(30);
+	    expect(path.position()).toEqual([50, 30]);
+	});
+	it("should should have one vertex that references itself", function () {
+	    expect(path.vertexes.length).toEqual(1);
+	    expect(path.vertexes[0].state).toEqual(path.state);
+	});
+    });
+    describe("addVertex", function () {
+	beforeEach(function(){path.addVertex()});
+	it("should increase the number of vertexes by 1", function () {
+	    expect(path.vertexes.length).toEqual(2);
+	});
+	it("should use the current direction and position for the new vertex", function () {
+	    expect(path.vertexes[0].position()).toEqual(path.vertexes[0].position());
+	});
+	it("should become the new state for the path", function () {
+	    path.move(50);
+	    expect(path.position()).toEqual([50, 0])
+	    expect(path.vertexes[1].position()).toEqual([50, 0]);
+	    expect(path.vertexes[0].position()).toEqual([0, 0]);
+	});
+    });
+    describe("move", function () {
+	it("should only collect vertexes if the pen is down", function () {
+	    path.penUp();
+	    path.move(50);
+	    expect(path.vertexes.length).toEqual(1);
+	    path.penDown();
+	    path.move(50);
+	    expect(path.vertexes.length).toEqual(2);
+	});
+    });
+
+    it("should store the vertexes of the path as an ordered collection of turtles", function () {
+	path.penDown();
+	path.move(9);
+	path.turn(180 - 53);
+	path.move(15);
+	path.turn(180 - 37 - 37);
+	path.move(15);
+	path.turn(180 - 53);
+	path.move(9);
+	path.turn(90);
+	path.penUp();
+	expect(path.vertexes.length).toEqual(5);
+	expect(path.direction()).toEqual(90);
+	expect(path.vertexes[0].position()).toEqual([0, 0]);
+	expect(path.vertexes[1].position()).toEqual([9, 0]);
+	expect(path.vertexes[2].x()).toRoundTo(12);
+	expect(path.vertexes[2].y()).toRoundTo(0);
+	expect(path.vertexes[3].x()).toRoundTo(0);
+	expect(path.vertexes[3].y()).toRoundTo(-9);
+	expect(path.vertexes[4].x()).toRoundTo(0);
+	expect(path.vertexes[4].y()).toRoundTo(0);
+    }); 
+
+});

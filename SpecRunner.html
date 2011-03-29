@@ -13,25 +13,6 @@
   <!-- include spec files here... -->
   <script type="text/javascript" src="turtlespec.js"></script>
 
-  <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
-  <script type="text/javascript">
-$(function(){
-    var path = new TurtlePath(0, [100, 100]);
-    path.penDown();
-    path.move(9);
-    path.turn(180 - 53);
-    path.move(15);
-    path.turn(180 - 37 - 37);
-    path.move(15);
-    path.turn(180 - 53);
-    path.move(9);
-    path.turn(90);
-    path.penUp();
-    path.setPosition(100, 100);
-    path.render(document.getElementById('canvas'));
-});
-  </script>
-
 </head>
 <body>
 
@@ -44,6 +25,26 @@ $(function(){
 canvas {border: 1pt solid black;}
 </style>
 <canvas id="canvas" width="200" height="200"></canvas>
+
+<script type="text/javascript">
+(function (window, document, undefined){
+   var path = new TurtlePath();
+    path.penDown();
+    path.turn(-90);
+    path.move(9);
+    path.turn(180 - 53);
+    path.move(15);
+    path.turn(180 - 37 - 37);
+    path.move(15);
+    path.turn(180 - 53);
+    path.move(9);
+    path.penUp();
+    path.setPosition(50, 50);
+    path.setDirection(45);
+    path.render(document.getElementById('canvas'));
+    this.path = path;
+})(this, this.document);
+  </script>
 
 </body>
 </html>

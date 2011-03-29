@@ -1,16 +1,21 @@
 (function (window, document, undefined) {
-    function extend(left, right) {for (var key in right) left[key] = right[key]; return left;}
+    function xtnd(left, right) {for (var key in right) left[key] = right[key]; return left;}
+    function extend(target) {
+	if (arguments.length == 2) {xtnd(arguments[0], arguments[1])}
+	else if (arguments.length > 2) {
+	    for (var i=1; i<arguments.length; i++) {xtnd(target, arguments[i])}
+	}
+	return target;
+    }
     function Turtle() {
-	extend(this, {
+	return extend(this, {
 	    state: {},
 	    home: (arguments.length == 2) ? {
 		direction: arguments[0],
 		x: arguments[1][0], 
 		y: arguments[1][1]
 	    } : {direction: 0, x: 0, y: 0}
-	});
-	this.clear();
-	return this;
+	}).clear();
     }
     extend(Turtle.prototype, {
 	clear: function () {
@@ -65,8 +70,7 @@
 	});
 	return this;
     }
-    extend(TurtlePath.prototype, Turtle.prototype);
-    extend(TurtlePath.prototype, {
+    extend(TurtlePath.prototype, Turtle.prototype, {
 	addVertex: function() {
 	    var vertex = extend(new Turtle(), {
 		state: extend({}, this.state),
@@ -87,20 +91,32 @@
 	    if (this.penIsDown) {
 		this.addVertex();
 	    }
+	    else if (this.canvas) {
+		this.render(this.canvas);
+	    }
 	    return this;
 	},
+	turn: function(degrees) {
+	    Turtle.prototype.turn.apply(this, arguments);
+	    if (this.canvas) {
+		this.render(this.canvas);
+	    }
+	},
 	render: function (canvas) {
-	    console.log('render()');
 	    var maxidx = this.vertexes.length;
 	    var ctx = canvas.getContext('2d');
-	    ctx.beginPath();
+	    ctx.clearRect(0, 0, canvas.width, canvas.height);
+	    ctx.save();
 	    ctx.translate(this.x(), this.y());
 	    ctx.rotate(this.directionInRadians());
+	    ctx.beginPath();
 	    ctx.moveTo(this.vertexes[0].x(), this.vertexes[0].y());
 	    for(var i = 1; i < maxidx; i++) {
 		ctx.lineTo(this.vertexes[i].x(), this.vertexes[i].y());
 	    }
+	    ctx.closePath();
 	    ctx.stroke();
+	    ctx.restore();
 	}
     });
     function Commands () {

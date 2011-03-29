@@ -188,13 +188,19 @@ describe("TurtlePath", function () {
 		'lineTo',
 		'stroke',
 		'translate',
-		'rotate'
+		'rotate',
+		'closePath',
+		'save',
+		'restore',
+		'clearRect'
 	    ]);
 	});
 	it("should render a polygon to the given canvas", function () {
 	    path.render({
 		getContext: function (type) {return context}
 	    });
+	    expect(context.clearRect).wasCalled();
+	    expect(context.save).wasCalled();
 	    expect(context.translate).wasCalled();
 	    expect(context.rotate).wasCalled();
 	    expect(context.beginPath).wasCalled();
@@ -204,6 +210,7 @@ describe("TurtlePath", function () {
 	    expect(context.lineTo).wasCalledWith(path.vertexes[3].x(), path.vertexes[3].y());
 	    expect(context.lineTo).wasCalledWith(path.vertexes[4].x(), path.vertexes[4].y());
 	    expect(context.stroke).wasCalled();
+	    expect(context.restore).wasCalled();
 	});
 
 	it("should use position and direction for canvas translation and rotaton", function () {

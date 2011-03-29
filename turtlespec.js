@@ -140,7 +140,6 @@ describe("TurtlePath", function () {
 	    expect(path.vertexes.length).toEqual(2);
 	});
     });
-
     it("should store the vertexes of the path as an ordered collection of turtles", function () {
 	this.addMatchers({
 	    toRoundTo: function (expected) {
@@ -168,7 +167,6 @@ describe("TurtlePath", function () {
 	expect(path.vertexes[4].x()).toRoundTo(0);
 	expect(path.vertexes[4].y()).toRoundTo(0);
     }); 
-
     describe("render", function () {
 	var context;
 	beforeEach(function () {
@@ -182,6 +180,8 @@ describe("TurtlePath", function () {
 	    path.move(9);
 	    path.turn(90);
 	    path.penUp();
+	    path.setPosition(20, 30);
+	    path.setDirection(90);
 	    context = jasmine.createSpyObj('context', [
 		'beginPath',
 		'moveTo',
@@ -194,15 +194,14 @@ describe("TurtlePath", function () {
 		'restore',
 		'clearRect'
 	    ]);
+	    canvas = {getContext: function (type) {return context}};
 	});
 	it("should render a polygon to the given canvas", function () {
-	    path.render({
-		getContext: function (type) {return context}
-	    });
+	    path.render(canvas);
 	    expect(context.clearRect).wasCalled();
 	    expect(context.save).wasCalled();
-	    expect(context.translate).wasCalled();
-	    expect(context.rotate).wasCalled();
+	    expect(context.translate).wasCalledWith(20, 30);
+	    expect(context.rotate).wasCalledWith(90 * Math.PI / 180);
 	    expect(context.beginPath).wasCalled();
 	    expect(context.moveTo).wasCalledWith(path.vertexes[0].x(), path.vertexes[0].y());
 	    expect(context.lineTo).wasCalledWith(path.vertexes[1].x(), path.vertexes[1].y());
@@ -212,13 +211,10 @@ describe("TurtlePath", function () {
 	    expect(context.stroke).wasCalled();
 	    expect(context.restore).wasCalled();
 	});
-
 	it("should use position and direction for canvas translation and rotaton", function () {
 	    path.setPosition(100,100);
 	    path.setDirection(20);
-	    path.render({
-		getContext: function() {return context},
-	    });
+	    path.render(canvas);
 	    expect(context.translate).wasCalledWith(100, 100);
 	    expect(context.rotate).wasCalledWith(Math.PI*20/180);
 	});

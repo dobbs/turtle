@@ -88,100 +88,124 @@ describe("Turtle", function () {
 	    expect(turtle.y()).toRoundTo(30);
 	});
     });
+
+    describe("use({toolname: tool})", function () {
+	it("should install the tool at turtle.toolname", function () {
+	    turtle.use({"atool":{"amethod":function(){}}});
+	    expect(turtle.atool).toBeDefined();
+	    expect(turtle.atool.amethod).toBeDefined();
+	});
+	it("should give each of the tools a reference back to the turtle", function () {
+	    var tool1 = {"amethod":function(){}};
+	    var tool2 = {"bmethod":function(){}};
+	    turtle.use({"atool":tool1, "btool":tool2});
+	    expect(tool1.turtle).toBeDefined();
+	    expect(tool1.turtle.move).toBeDefined();
+	    expect(tool2.turtle).toBeDefined();
+	    expect(tool2.turtle.turn).toBeDefined();
+	});
+	it("should register the tool with appropriate event_handlers", function () {
+	    var obj = {"amethod":function(){}}
+	    turtle.use({"atool":obj});
+	    expect(turtle.event_handlers["amethod"][0]).toBe(obj);
+	});
+	it("should signal tool.methods when turtle.methods are called", function () {
+	    var tool = jasmine.createSpyObj('atool', ['move']);
+	    turtle.use({"atool":tool});
+	    turtle.move(20);
+	    expect(tool.move).toHaveBeenCalledWith(20);
+	    expect(turtle.x()).toEqual(20);
+	});
+    });
 });
 
-describe("TurtlePath", function () {
-    var path;
+describe("TurtlePen", function () {
+    var turtle, pen;
     beforeEach(function () {
-	path = new TurtlePath();
-    });
-    describe("new", function () {
-	it("should walk like a Turtle", function () {
-	    expect(path.position()).toEqual([0, 0]);
-	    expect(path.direction()).toEqual(0);
-	    path.move(50);
-	    expect(path.position()).toEqual([50, 0]);
-	    path.turn(90);
-	    path.move(30);
-	    expect(path.position()).toEqual([50, 30]);
-	});
-	it("should should have an empty list of vertexes", function () {
-	    expect(path.vertexes.length).toEqual(0);
-	});
-    });
-    describe("addVertex", function () {
-	beforeEach(function(){path.addVertex()});
-	it("should increase the number of vertexes by 1", function () {
-	    expect(path.vertexes.length).toEqual(1);
-	});
-	it("should use the current direction and position for the new vertex", function () {
-	    expect(path.vertexes[0].position()).toEqual(path.vertexes[0].position());
-	});
-    });
-    describe("penDown", function () {
-	it("should add a vertex at the current position", function () {
-	    path.penUp();
-	    path.turn(90);
-	    path.move(25);
-	    path.penDown();
-	    expect(path.vertexes.length).toEqual(1);
-	    expect(path.vertexes[0].position()).toEqual(path.position());
-	    expect(path.vertexes[0].direction()).toEqual(path.direction());
-	});
-    });
-    describe("move", function () {
-	it("should only collect vertexes if the pen is down", function () {
-	    path.penUp();
-	    path.move(50);
-	    expect(path.vertexes.length).toEqual(0);
-	    path.penDown();
-	    expect(path.vertexes.length).toEqual(1);
-	    path.move(50);
-	    expect(path.vertexes.length).toEqual(2);
-	});
-    });
-    it("should store the vertexes of the path as an ordered collection of turtles", function () {
 	this.addMatchers({
 	    toRoundTo: function (expected) {
 		return Math.round(this.actual) === expected;
 	    },
 	});
-	path.penDown();
-	path.move(9);
-	path.turn(180 - 53);
-	path.move(15);
-	path.turn(180 - 37 - 37);
-	path.move(15);
-	path.turn(180 - 53);
-	path.move(9);
-	path.turn(90);
-	path.penUp();
-	expect(path.vertexes.length).toEqual(5);
-	expect(path.direction()).toEqual(90);
-	expect(path.vertexes[0].position()).toEqual([0, 0]);
-	expect(path.vertexes[1].position()).toEqual([9, 0]);
-	expect(path.vertexes[2].x()).toRoundTo(0);
-	expect(path.vertexes[2].y()).toRoundTo(12);
-	expect(path.vertexes[3].x()).toRoundTo(-9);
-	expect(path.vertexes[3].y()).toRoundTo(0);
-	expect(path.vertexes[4].x()).toRoundTo(0);
-	expect(path.vertexes[4].y()).toRoundTo(0);
-    }); 
+	turtle = new Turtle();
+	pen = new TurtlePen();
+	turtle.use({'pen': pen});
+    });
+    describe("new", function () {
+	it("should should have an empty list of vertexes", function () {
+	    expect(pen.vertexes.length).toEqual(0);
+	});
+    });
+    describe("addVertex", function () {
+	beforeEach(function(){pen.addVertex()});
+	it("should increase the number of vertexes by 1", function () {
+	    expect(pen.vertexes.length).toEqual(1);
+	});
+	it("should use the turtle's direction and position for the new vertex", function () {
+	    expect(pen.vertexes[0].x()).toRoundTo(turtle.x());
+	    expect(pen.vertexes[0].y()).toRoundTo(turtle.y());
+	    expect(pen.vertexes[0].direction()).toEqual(turtle.direction());
+	});
+    });
+    describe("pen.down", function () {
+	it("should add a vertex at the current position", function () {
+	    turtle.pen.up();
+	    turtle.turn(90);
+	    turtle.move(25);
+	    turtle.pen.down();
+	    expect(pen.vertexes.length).toEqual(1);
+	    expect(pen.vertexes[0].x()).toRoundTo(0);
+	    expect(pen.vertexes[0].y()).toRoundTo(25);
+	    expect(pen.vertexes[0].direction()).toEqual(90);
+	});
+    });
+    describe("move", function () {
+	it("should only collect vertexes if the pen is down", function () {
+	    turtle.pen.up();
+	    turtle.move(50);
+	    expect(pen.vertexes.length).toEqual(0);
+	    turtle.pen.down();
+	    expect(pen.vertexes.length).toEqual(1);
+	    turtle.move(50);
+	    expect(pen.vertexes.length).toEqual(2);
+	});
+    });
+    it("should store the vertexes of the path as an ordered collection of turtles", function () {
+	turtle.pen.down();
+	turtle.move(9);
+	turtle.turn(180 - 53);
+	turtle.move(15);
+	turtle.turn(180 - 37 - 37);
+	turtle.move(15);
+	turtle.turn(180 - 53);
+	turtle.move(9);
+	turtle.turn(90);
+	turtle.pen.up();
+	expect(pen.vertexes.length).toEqual(5);
+	expect(pen.vertexes[0].position()).toEqual([0, 0]);
+	expect(pen.vertexes[1].position()).toEqual([9, 0]);
+	expect(pen.vertexes[2].x()).toRoundTo(0);
+	expect(pen.vertexes[2].y()).toRoundTo(12);
+	expect(pen.vertexes[3].x()).toRoundTo(-9);
+	expect(pen.vertexes[3].y()).toRoundTo(0);
+	expect(pen.vertexes[4].x()).toRoundTo(0);
+	expect(pen.vertexes[4].y()).toRoundTo(0);
+    });
     describe("render", function () {
 	var context;
 	beforeEach(function () {
-	    path.penDown();
-	    path.move(9);
-	    path.turn(180 - 53);
-	    path.move(15);
-	    path.turn(180 - 37 - 37);
-	    path.move(15);
-	    path.turn(180 - 53);
-	    path.move(9);
-	    path.turn(90);
-	    path.penUp();
-	    path.setPosition(20, 30);
-	    path.setDirection(90);
+	    turtle.pen.down();
+	    turtle.move(9);
+	    turtle.turn(180 - 53);
+	    turtle.move(15);
+	    turtle.turn(180 - 37 - 37);
+	    turtle.move(15);
+	    turtle.turn(180 - 53);
+	    turtle.move(9);
+	    turtle.turn(90);
+	    turtle.pen.up();
+	    turtle.setPosition(20, 30);
+	    turtle.setDirection(90);
 	    context = jasmine.createSpyObj('context', [
 		'beginPath',
 		'moveTo',
@@ -197,26 +221,26 @@ describe("TurtlePath", function () {
 	    canvas = {getContext: function (type) {return context}};
 	});
 	it("should render a polygon to the given canvas", function () {
-	    path.render(canvas);
-	    expect(context.clearRect).wasCalled();
-	    expect(context.save).wasCalled();
-	    expect(context.translate).wasCalledWith(20, 30);
-	    expect(context.rotate).wasCalledWith(90 * Math.PI / 180);
-	    expect(context.beginPath).wasCalled();
-	    expect(context.moveTo).wasCalledWith(path.vertexes[0].x(), path.vertexes[0].y());
-	    expect(context.lineTo).wasCalledWith(path.vertexes[1].x(), path.vertexes[1].y());
-	    expect(context.lineTo).wasCalledWith(path.vertexes[2].x(), path.vertexes[2].y());
-	    expect(context.lineTo).wasCalledWith(path.vertexes[3].x(), path.vertexes[3].y());
-	    expect(context.lineTo).wasCalledWith(path.vertexes[4].x(), path.vertexes[4].y());
-	    expect(context.stroke).wasCalled();
-	    expect(context.restore).wasCalled();
+	    pen.render(canvas);
+	    expect(context.clearRect).toHaveBeenCalled();
+	    expect(context.save).toHaveBeenCalled();
+	    expect(context.translate).toHaveBeenCalledWith(20, 30);
+	    expect(context.rotate).toHaveBeenCalledWith(90 * Math.PI / 180);
+	    expect(context.beginPath).toHaveBeenCalled();
+	    expect(context.moveTo).toHaveBeenCalledWith(pen.vertexes[0].x(), pen.vertexes[0].y());
+	    expect(context.lineTo).toHaveBeenCalledWith(pen.vertexes[1].x(), pen.vertexes[1].y());
+	    expect(context.lineTo).toHaveBeenCalledWith(pen.vertexes[2].x(), pen.vertexes[2].y());
+	    expect(context.lineTo).toHaveBeenCalledWith(pen.vertexes[3].x(), pen.vertexes[3].y());
+	    expect(context.lineTo).toHaveBeenCalledWith(pen.vertexes[4].x(), pen.vertexes[4].y());
+	    expect(context.stroke).toHaveBeenCalled();
+	    expect(context.restore).toHaveBeenCalled();
 	});
 	it("should use position and direction for canvas translation and rotaton", function () {
-	    path.setPosition(100,100);
-	    path.setDirection(20);
-	    path.render(canvas);
-	    expect(context.translate).wasCalledWith(100, 100);
-	    expect(context.rotate).wasCalledWith(Math.PI*20/180);
+	    turtle.setPosition(100,100);
+	    turtle.setDirection(20);
+	    pen.render(canvas);
+	    expect(context.translate).toHaveBeenCalledWith(100, 100);
+	    expect(context.rotate).toHaveBeenCalledWith(Math.PI*20/180);
 	});
     });
 });

@@ -27,22 +27,24 @@ canvas {border: 1pt solid black;}
 <canvas id="canvas" width="200" height="200"></canvas>
 
 <script type="text/javascript">
-(function (window, document, undefined){
-   var path = new TurtlePath();
-    path.penDown();
-    path.turn(-90);
-    path.move(9);
-    path.turn(180 - 53);
-    path.move(15);
-    path.turn(180 - 37 - 37);
-    path.move(15);
-    path.turn(180 - 53);
-    path.move(9);
-    path.penUp();
-    path.setPosition(50, 50);
-    path.setDirection(45);
-    path.render(document.getElementById('canvas'));
-    this.path = path;
+(function end_body (window, document, undefined){
+    var turtle = new Turtle();
+    var pen = new TurtlePen();
+    turtle.use({pen: pen})
+    turtle.pen.down();
+    turtle.turn(-90);
+    turtle.move(9);
+    turtle.turn(180 - 53);
+    turtle.move(15);
+    turtle.turn(180 - 37 - 37);
+    turtle.move(15);
+    turtle.turn(180 - 53);
+    turtle.move(9);
+    turtle.pen.up();
+    turtle.setPosition(50, 50);
+    turtle.setDirection(45);
+    pen.render(document.getElementById('canvas'));
+    this.turtle = turtle;
 })(this, this.document);
   </script>
 

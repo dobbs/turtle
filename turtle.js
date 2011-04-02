@@ -10,6 +10,7 @@
     function Turtle() {
 	return extend(this, {
 	    state: {},
+	    event_handlers: {},
 	    home: (arguments.length == 2) ? {
 		direction: arguments[0],
 		x: arguments[1][0], 
@@ -18,76 +19,99 @@
 	}).clear();
     }
     extend(Turtle.prototype, {
-	clear: function () {
+	clear: function clear () {
 	    this.setDirection(this.home.direction);
 	    this.setPosition(this.home.x, this.home.y);
+	    this.signal("clear", arguments);
 	    return this;
 	},
-	direction: function () {
+	direction: function direction () {
 	    return this.state.direction;
 	},
-	directionInRadians: function () {
+	directionInRadians: function directionInRadians () {
 	    return this.direction()*Math.PI/180
 	},
-	position: function () {
+	position: function position () {
 	    return [this.x(), this.y()];
 	},
-	x: function () {
+	x: function x () {
 	    return this.state.x;
 	},
-	y: function () {
+	y: function y () {
 	    return this.state.y;
 	},
-	setDirection: function (degrees) {
+	setDirection: function setDirection (degrees) {
 	    this.state.direction = parseFloat(degrees) % 360;
 	    (this.state.direction < 0) && (this.state.direction += 360);
 	    return this;
 	},
-	setPosition: function (x, y) {
+	setPosition: function setPosition (x, y) {
 	    this.state.x = parseFloat(x);
 	    this.state.y = parseFloat(y);
 	    return this;
 	},
-	turn: function (degrees) {
+	turn: function turn (degrees) {
 	    this.setDirection(this.state.direction + parseFloat(degrees));
+	    this.signal("turn", arguments);
 	    return this;
 	},
-	move: function (pixels) {
+	move: function move (pixels) {
 	    var p = parseFloat(pixels);
 	    this.setPosition(
 		Math.cos(this.directionInRadians()) * p + this.x(),
 		Math.sin(this.directionInRadians()) * p + this.y()
 	    );
+	    this.signal("move", arguments);
 	    return this;
+	},
+	signal: function signal (method, args) {
+	    if (this.event_handlers[method] && this.event_handlers[method].length) {
+		for (var key in this.event_handlers[method]) {
+		    var obj = this.event_handlers[method][key];
+		    obj[method].apply(obj, args);
+		}
+	    }
+	    return;
+	},
+	use: function use (tools) {
+	    extend(this, tools);
+	    for (var objname in tools) {
+		var obj = tools[objname];
+		obj.turtle = this;
+		for (var method in obj) {
+		    this.event_handlers[method] || (this.event_handlers[method] = []);
+		    this.event_handlers[method].push(obj)
+		}
+	    }
+	    return this;
+	},
+	clone: function clone () {
+	    return extend(new Turtle(), {
+		state: extend({}, this.state),
+		home: extend({}, this.home),
+		event_handlers: extend({}, this.event_handlers)
+	    });
 	}
     });
-    function TurtlePath() {
-	var turtle = new Turtle(arguments);
+    function TurtlePen() {
 	extend(this, {
-	    state: turtle.state,
-	    home: turtle.home,
 	    vertexes: []
 	});
 	return this;
     }
-    extend(TurtlePath.prototype, Turtle.prototype, {
+    extend(TurtlePen.prototype, {
 	addVertex: function() {
-	    var vertex = extend(new Turtle(), {
-		state: extend({}, this.state),
-		home: extend({}, this.home)
-	    });
-	    this.vertexes.push(vertex);
+	    this.vertexes.push(this.turtle.clone());
 	    return this;
 	},
-	penDown: function () {
+	down: function () {
 	    this.addVertex();
 	    this.penIsDown = true;
 	},
-	penUp: function () {
+	up: function () {
 	    this.penIsDown = false;
 	},
 	move: function (pixels) {
-	    Turtle.prototype.move.apply(this, arguments);
 	    if (this.penIsDown) {
 		this.addVertex();
 	    }
@@ -96,19 +120,13 @@
 	    }
 	    return this;
 	},
-	turn: function(degrees) {
-	    Turtle.prototype.turn.apply(this, arguments);
-	    if (this.canvas) {
-		this.render(this.canvas);
-	    }
-	},
 	render: function (canvas) {
 	    var maxidx = this.vertexes.length;
 	    var ctx = canvas.getContext('2d');
 	    ctx.clearRect(0, 0, canvas.width, canvas.height);
 	    ctx.save();
-	    ctx.translate(this.x(), this.y());
-	    ctx.rotate(this.directionInRadians());
+	    ctx.translate(this.turtle.x(), this.turtle.y());
+	    ctx.rotate(this.turtle.directionInRadians());
 	    ctx.beginPath();
 	    ctx.moveTo(this.vertexes[0].x(), this.vertexes[0].y());
 	    for(var i = 1; i < maxidx; i++) {
@@ -296,7 +314,7 @@
         };
     }
     window.Turtle = Turtle;
-    window.TurtlePath = TurtlePath;
+    window.TurtlePen = TurtlePen;
     window.Commands = Commands;
     window.LogView = LogView;
     window.CanvasView = CanvasView;

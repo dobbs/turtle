@@ -29,8 +29,8 @@ canvas {border: 1pt solid black;}
 <script type="text/javascript">
 (function end_body (window, document, undefined){
     var turtle = new Turtle();
-    var pen = new TurtlePen();
-    turtle.use({pen: pen})
+    var costume_pen = new Turtle.Pen();
+    turtle.use({pen: costume_pen});
     turtle.pen.down();
     turtle.turn(-90);
     turtle.move(9);
@@ -43,10 +43,20 @@ canvas {border: 1pt solid black;}
     turtle.pen.up();
     turtle.setPosition(50, 50);
     turtle.setDirection(45);
-    pen.render(document.getElementById('canvas'));
+    var context = document.getElementById('canvas').getContext('2d');
+    turtle.drop("pen");
+    var costume = new Turtle.Costume();
+    costume.use({"shape": costume_pen});
+    turtle.use({
+        pen: new Turtle.Pen(),
+        costume: costume,
+    });
+    turtle.pen.down();
+    turtle.turn(-90).move(40).turn(135).move(50).render(context);
     this.turtle = turtle;
+    this.context = context;
 })(this, this.document);
-  </script>
+</script>
 
 </body>
 </html>

@@ -7,6 +7,49 @@
 	}
 	return target;
     }
+    var tool_base = {
+	event_handlers: {},
+	signal: function signal (method, args) {
+	    if (this.event_handlers[method] && this.event_handlers[method].length) {
+		for (var key in this.event_handlers[method]) {
+		    var obj = this.event_handlers[method][key];
+		    obj[method].apply(obj, args);
+		}
+	    }
+	    return;
+	},
+	use: function use (tools) {
+	    extend(this, tools);
+	    for (var objname in tools) {
+		var obj = tools[objname];
+		obj.holder = this;
+		for (var i in (obj.signals || [])) {
+		    var method = obj.signals[i];
+		    this.event_handlers[method] || (this.event_handlers[method] = []);
+		    this.event_handlers[method].push(obj)
+		}
+	    }
+	    return this;
+	},
+	drop: function drop (toolname) {
+	    var tool = this[toolname];
+	    delete(this[toolname]);
+	    for (var i in (tool.signals || [])) {
+		var method = tool.signals[i];
+		if (this.event_handlers[method]) {
+		    this.event_handlers[method] = this.event_handlers[method].filter(
+			function(handler, idx) {
+			    if (handler === tool) {return false}
+			    return true;
+			});
+		    if (this.event_handlers[method].length == 0) {
+			delete(this.event_handlers[method]);
+		    }
+		}
+	    }
+	    delete(tool["holder"]);
+	},
+    };
     function Turtle() {
 	return extend(this, {
 	    state: {},
@@ -18,7 +61,7 @@
 	    } : {direction: 0, x: 0, y: 0}
 	}).clear();
     }
-    extend(Turtle.prototype, {
+    extend(Turtle.prototype, tool_base, {
 	clear: function clear () {
 	    this.setDirection(this.home.direction);
 	    this.setPosition(this.home.x, this.home.y);
@@ -64,44 +107,24 @@
 	    this.signal("move", arguments);
 	    return this;
 	},
-	signal: function signal (method, args) {
-	    if (this.event_handlers[method] && this.event_handlers[method].length) {
-		for (var key in this.event_handlers[method]) {
-		    var obj = this.event_handlers[method][key];
-		    obj[method].apply(obj, args);
-		}
-	    }
-	    return;
-	},
-	use: function use (tools) {
-	    extend(this, tools);
-	    for (var objname in tools) {
-		var obj = tools[objname];
-		obj.turtle = this;
-		for (var method in obj) {
-		    this.event_handlers[method] || (this.event_handlers[method] = []);
-		    this.event_handlers[method].push(obj)
-		}
-	    }
-	    return this;
-	},
 	clone: function clone () {
 	    return extend(new Turtle(), {
 		state: extend({}, this.state),
 		home: extend({}, this.home),
 		event_handlers: extend({}, this.event_handlers)
 	    });
+	},
+	render: function render () {
+	    this.signal("render", arguments);
 	}
     });
     function TurtlePen() {
-	extend(this, {
-	    vertexes: []
-	});
-	return this;
+	return extend(this, {vertexes: []});
     }
     extend(TurtlePen.prototype, {
+	signals: ["move", "render"],
 	addVertex: function() {
-	    this.vertexes.push(this.turtle.clone());
+	    this.vertexes.push(this.holder.clone());
 	    return this;
 	},
 	down: function () {
@@ -115,27 +138,37 @@
 	    if (this.penIsDown) {
 		this.addVertex();
 	    }
-	    else if (this.canvas) {
-		this.render(this.canvas);
-	    }
 	    return this;
 	},
-	render: function (canvas) {
-	    var maxidx = this.vertexes.length;
-	    var ctx = canvas.getContext('2d');
-	    ctx.clearRect(0, 0, canvas.width, canvas.height);
-	    ctx.save();
-	    ctx.translate(this.turtle.x(), this.turtle.y());
-	    ctx.rotate(this.turtle.directionInRadians());
-	    ctx.beginPath();
-	    ctx.moveTo(this.vertexes[0].x(), this.vertexes[0].y());
-	    for(var i = 1; i < maxidx; i++) {
-		ctx.lineTo(this.vertexes[i].x(), this.vertexes[i].y());
+	render: function (ctx) {
+	    if (this.vertexes && this.vertexes.length) {
+		ctx.beginPath();
+		ctx.moveTo(this.vertexes[0].x(), this.vertexes[0].y());
+		var maxidx = this.vertexes.length;
+		for(var i = 1; i < maxidx; i++) {
+		    ctx.lineTo(this.vertexes[i].x(), this.vertexes[i].y());
+		}
+		ctx.stroke();
 	    }
-	    ctx.closePath();
+	}
+    });
+    function TurtleCostume () {
+	return this;
+    }
+    extend(TurtleCostume.prototype, tool_base, {
+	signals: ["render"],
+	render: function (ctx) {
+	    ctx.save();
+	    ctx.translate(this.holder.x(), this.holder.y());
+	    ctx.rotate(this.holder.directionInRadians());
+	    ctx.beginPath();
+	    ctx.moveTo(this.shape.vertexes[0].x(), this.shape.vertexes[0].y());
+	    for(var i = 1; i < this.shape.vertexes.length; i++) {
+		ctx.lineTo(this.shape.vertexes[i].x(), this.shape.vertexes[i].y());
+	    }
 	    ctx.stroke();
 	    ctx.restore();
-	}
+	},
     });
     function Commands () {
 	var self = [];
@@ -314,7 +347,10 @@
         };
     }
     window.Turtle = Turtle;
-    window.TurtlePen = TurtlePen;
+    extend(window.Turtle, {
+	Pen: TurtlePen,
+	Costume: TurtleCostume,
+    });
     window.Commands = Commands;
     window.LogView = LogView;
     window.CanvasView = CanvasView;

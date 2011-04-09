@@ -257,11 +257,12 @@ describe("Turtle.Pen", function () {
 	    ]);
 	    animation = pen.animation(context);
 	});
+
 	describe("render", function () {
 	    it("should render a polygon to the given context", function () {
 		turtle.setPosition(20, 30);
 		turtle.setDirection(90);
-		context.canvas = {height: 100, width: 200, getContext: function () {return context}};
+		context.canvas = {height: 100, width: 200};
 		pen.render(context);
 		expect(context.beginPath).toHaveBeenCalled();
 		expect(context.moveTo).toHaveBeenCalledWith(
@@ -308,7 +309,7 @@ describe("Turtle.Pen", function () {
 
 describe("Turtle.Costume", function () {
     var turtle, pen, costume, context;
-    it("if it's using a 'shape', then render lines for each vertex in the shape", function () {
+    it("renders lines for each vertex in the shape, if it's using a 'shape'", function () {
 	costume = new Turtle.Costume();
 	costume.holder = new Turtle(60, [50, 40]);
 	pen = new Turtle.Pen();

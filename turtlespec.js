@@ -309,7 +309,7 @@ describe("Turtle.Pen", function () {
 
 describe("Turtle.Costume", function () {
     var turtle, pen, costume, context;
-    it("renders lines for each vertex in the shape, if it's using a 'shape'", function () {
+    beforeEach(function() {
 	costume = new Turtle.Costume();
 	costume.holder = new Turtle(60, [50, 40]);
 	pen = new Turtle.Pen();
@@ -330,6 +330,8 @@ describe("Turtle.Costume", function () {
     	    'restore'
     	]);
     	context.canvas = {height: 100, width: 200, getContext: function () {return context}};
+    });
+    it("renders lines for each vertex in the shape, if it's using a 'shape'", function () {
 	costume.render(context);
 	expect(context.save).toHaveBeenCalled();
 	expect(context.translate).toHaveBeenCalledWith(50, 40);
@@ -340,6 +342,14 @@ describe("Turtle.Costume", function () {
 	expect(context.lineTo).toHaveBeenCalledWith(0, 10);
 	expect(context.lineTo).toHaveBeenCalledWith(10, 10);
 	expect(context.lineTo).toHaveBeenCalledWith(10, 0);
+	expect(context.stroke).toHaveBeenCalled();
+	expect(context.restore).toHaveBeenCalled();
+    });
+    it("uses turtle, if specified, for translate and rotate calls", function() {
+	costume.render(context, new Turtle(30, [60, 90]));
+	expect(context.save).toHaveBeenCalled();
+	expect(context.translate).toHaveBeenCalledWith(60, 90);
+	expect(context.rotate).toHaveBeenCalledWith(Math.PI/6);
 	expect(context.stroke).toHaveBeenCalled();
 	expect(context.restore).toHaveBeenCalled();
     });

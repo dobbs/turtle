@@ -139,13 +139,13 @@
 	    }
 	    return this;
 	},
-	render: function render(ctx, limit) {
+	render: function render(ctx /*, limit*/) {
 	    if (this.vertexes && this.vertexes.length) {
+		var limit = arguments[1];
+		if (limit === undefined || limit > this.vertexes.length)
+		    limit = this.vertexes.length;		    
 		ctx.beginPath();
 		ctx.moveTo(this.vertexes[0].x(), this.vertexes[0].y());
-		if (limit === undefined || limit > this.vertexes.length) {
-		    limit = this.vertexes.length;		    
-		}
 		for(var i = 1; i < limit; i++) {
 		    ctx.lineTo(this.vertexes[i].x(), this.vertexes[i].y());
 		}
@@ -170,10 +170,11 @@
     }
     extend(TurtleCostume.prototype, tool_base, {
 	signals: ["render"],
-	render: function (ctx) {
+	render: function (ctx /*, turtle*/) {
+	    var turtle = arguments[1] || this.holder;
 	    ctx.save();
-	    ctx.translate(this.holder.x(), this.holder.y());
-	    ctx.rotate(this.holder.directionInRadians());
+	    ctx.translate(turtle.x(), turtle.y());
+	    ctx.rotate(turtle.directionInRadians());
 	    this.signal("render", [ctx]);
 	    ctx.restore();
 	},

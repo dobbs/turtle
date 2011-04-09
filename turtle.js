@@ -235,9 +235,11 @@
 		}
 	    }
 	};
-        self.playback = function (opts) {
-            opts.interval = opts.interval || 100;
-            opts.opsPerStep = opts.opsPerStep || 10;
+        self.playback = function (args) {
+	    var opts = extend({
+		interval: 100,
+		opsPerStep: 10
+	    }, args);
 
             if(!opts.view) {
                 console.log('No rendering target found!');
@@ -245,34 +247,14 @@
                 return;
             }
 
-            var loop = function(cb, delay) {
-                var intervalId;
-
-                var cycle = function() {
-                    var ret = cb();
-
-                    if(ret == false) {
-                        clearInterval(intervalId);
-                    }
-                }
-
-                intervalId = setInterval(cycle, delay);
-            };
-
-            var i = 0;
-            loop(function() {
-                while(i < self.length) {
-                    self[i].apply(self, [opts.view]);
-
-                    i++;
-
-                    if(!(i % opts.opsPerStep)) {
-                        return true;
-                    }
-                }
-
-                return false;
-            }, opts.interval);
+	    var i = 0, limit = self.length;
+	    (function animate() {
+		do { self[i++].apply(self, [opts.view]) }
+		while(--limit && limit % opts.opsPerStep);
+		if (limit)
+		    setTimeout(animate, opts.interval);
+	    })();
+	    return;
         };
 	return self;
     }

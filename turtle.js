@@ -8,7 +8,6 @@
 	return target;
     }
     var tool_base = {
-	event_handlers: {},
 	signal: function signal (method, args) {
 	    if (this.event_handlers[method] && this.event_handlers[method].length) {
 		for (var key in this.event_handlers[method]) {
@@ -52,8 +51,8 @@
     };
     function Turtle() {
 	return extend(this, {
-	    state: {},
 	    event_handlers: {},
+	    state: {},
 	    home: (arguments.length == 2) ? {
 		direction: arguments[0],
 		x: arguments[1][0], 
@@ -153,7 +152,7 @@
 	}
     });
     function TurtleCostume () {
-	return this;
+	return extend(this, {event_handlers: {}});
     }
     extend(TurtleCostume.prototype, tool_base, {
 	signals: ["render"],

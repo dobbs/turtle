@@ -109,6 +109,17 @@ describe("Turtle", function () {
     	    turtle.use({"atool":obj});
     	    expect(turtle.event_handlers["amethod"][0]).toBe(obj);
     	});
+	it("should encapsulate event_handlers in turtle instances", function () {
+	    var turtle2 = new Turtle();
+    	    var objA = {"amethod":function(){}, "signals": ["amethod"]};
+	    turtle.use({"atool":objA});
+    	    var objB = {"bmethod":function(){}, "signals": ["bmethod"]};
+	    turtle2.use({"btool":objB});
+	    expect(turtle.event_handlers["amethod"]).toBeDefined();
+	    expect(turtle.event_handlers["bmethod"]).toBeUndefined();
+	    expect(turtle2.event_handlers["amethod"]).toBeUndefined();
+	    expect(turtle2.event_handlers["bmethod"]).toBeDefined();
+	});
     	it("should signal tool.methods when turtle.methods are called", function () {
     	    var tool = jasmine.createSpyObj('atool', ['move']);
     	    tool.signals = ["move"];

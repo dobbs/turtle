@@ -115,40 +115,54 @@
 	},
 	render: function render () {
 	    this.signal("render", arguments);
-	}
+	},
     });
     function TurtlePen() {
 	return extend(this, {vertexes: []});
     }
     extend(TurtlePen.prototype, {
 	signals: ["move", "render"],
-	addVertex: function() {
+	addVertex: function addVertex() {
 	    this.vertexes.push(this.holder.clone());
 	    return this;
 	},
-	down: function () {
+	down: function down() {
 	    this.addVertex();
 	    this.penIsDown = true;
 	},
-	up: function () {
+	up: function up() {
 	    this.penIsDown = false;
 	},
-	move: function (pixels) {
+	move: function move(pixels) {
 	    if (this.penIsDown) {
 		this.addVertex();
 	    }
 	    return this;
 	},
-	render: function (ctx) {
+	render: function render(ctx, limit) {
 	    if (this.vertexes && this.vertexes.length) {
 		ctx.beginPath();
 		ctx.moveTo(this.vertexes[0].x(), this.vertexes[0].y());
-		var maxidx = this.vertexes.length;
-		for(var i = 1; i < maxidx; i++) {
+		if (limit === undefined || limit > this.vertexes.length) {
+		    limit = this.vertexes.length;		    
+		}
+		for(var i = 1; i < limit; i++) {
 		    ctx.lineTo(this.vertexes[i].x(), this.vertexes[i].y());
 		}
 		ctx.stroke();
 	    }
+	},
+	animation: function animation(ctx) {
+	    var pen = this;
+	    return {
+		cursor: 0,
+		limit: pen.vertexes.length,
+		next: function next() {
+		    this.cursor += 1;
+		    pen.render(ctx, this.cursor);
+		    return this.cursor < this.limit;
+		}
+	    };
 	}
     });
     function TurtleCostume () {

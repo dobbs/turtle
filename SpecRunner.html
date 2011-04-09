@@ -52,7 +52,17 @@ canvas {border: 1pt solid black;}
         costume: costume,
     });
     turtle.pen.down();
-    turtle.turn(-90).move(40).turn(135).move(50).render(context);
+    turtle.turn(-90).move(40).turn(135).move(50);
+
+    var animation = turtle.pen.animation(context);
+    (function animate() {
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        if (animation.next()) {
+           setTimeout(animate, 200);
+        };
+    })();
+
+
     this.turtle = turtle;
     this.context = context;
 })(this, this.document);

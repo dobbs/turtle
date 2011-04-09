@@ -236,8 +236,9 @@ describe("Turtle.Pen", function () {
 	expect(pen.vertexes[4].x()).toRoundTo(0);
 	expect(pen.vertexes[4].y()).toRoundTo(0);
     });
-    describe("render", function () {
-	it("should render a polygon to the given context", function () {
+    describe("visualizations", function () {
+	var context, animation;
+	beforeEach(function(){
 	    turtle.pen.down();
 	    turtle.move(9);
 	    turtle.turn(180 - 53);
@@ -248,23 +249,59 @@ describe("Turtle.Pen", function () {
 	    turtle.move(9);
 	    turtle.turn(90);
 	    turtle.pen.up();
-	    turtle.setPosition(20, 30);
-	    turtle.setDirection(90);
-	    var context = jasmine.createSpyObj('context', [
+	    context = jasmine.createSpyObj('context', [
 		'beginPath',
 		'moveTo',
 		'lineTo',
 		'stroke',
 	    ]);
-	    context.canvas = {height: 100, width: 200, getContext: function () {return context}};
-	    pen.render(context);
-	    expect(context.beginPath).toHaveBeenCalled();
-	    expect(context.moveTo).toHaveBeenCalledWith(pen.vertexes[0].x(), pen.vertexes[0].y());
-	    expect(context.lineTo).toHaveBeenCalledWith(pen.vertexes[1].x(), pen.vertexes[1].y());
-	    expect(context.lineTo).toHaveBeenCalledWith(pen.vertexes[2].x(), pen.vertexes[2].y());
-	    expect(context.lineTo).toHaveBeenCalledWith(pen.vertexes[3].x(), pen.vertexes[3].y());
-	    expect(context.lineTo).toHaveBeenCalledWith(pen.vertexes[4].x(), pen.vertexes[4].y());
-	    expect(context.stroke).toHaveBeenCalled();
+	    animation = pen.animation(context);
+	});
+	describe("render", function () {
+	    it("should render a polygon to the given context", function () {
+		turtle.setPosition(20, 30);
+		turtle.setDirection(90);
+		context.canvas = {height: 100, width: 200, getContext: function () {return context}};
+		pen.render(context);
+		expect(context.beginPath).toHaveBeenCalled();
+		expect(context.moveTo).toHaveBeenCalledWith(
+		    pen.vertexes[0].x(), pen.vertexes[0].y());
+		expect(context.lineTo).toHaveBeenCalledWith(
+		    pen.vertexes[1].x(), pen.vertexes[1].y());
+		expect(context.lineTo).toHaveBeenCalledWith(
+		    pen.vertexes[2].x(), pen.vertexes[2].y());
+		expect(context.lineTo).toHaveBeenCalledWith(
+		    pen.vertexes[3].x(), pen.vertexes[3].y());
+		expect(context.lineTo).toHaveBeenCalledWith(
+		    pen.vertexes[4].x(), pen.vertexes[4].y());
+		expect(context.stroke).toHaveBeenCalled();
+	    });
+	});
+
+	describe("animation", function () {
+	    it("should generate an iterator", function () {
+		expect(typeof animation.next).toEqual("function");
+	    });
+	    it("should let the first frame moveTo, but not lineTo", function (){
+		animation.next();
+		expect(context.beginPath).toHaveBeenCalled();
+		expect(context.moveTo).toHaveBeenCalledWith(
+		    pen.vertexes[0].x(), pen.vertexes[0].y());
+		expect(context.lineTo).not.toHaveBeenCalled();
+		expect(context.stroke).toHaveBeenCalled();
+	    });
+	    it("should call lineTo for subsequent frames", function () {
+		animation.cursor = 2;
+		animation.next();
+		expect(context.beginPath).toHaveBeenCalled();
+		expect(context.moveTo).toHaveBeenCalledWith(
+		    pen.vertexes[0].x(), pen.vertexes[0].y());
+		expect(context.lineTo).toHaveBeenCalledWith(
+		    pen.vertexes[1].x(), pen.vertexes[1].y());
+		expect(context.lineTo).toHaveBeenCalledWith(
+		    pen.vertexes[2].x(), pen.vertexes[2].y());
+		expect(context.stroke).toHaveBeenCalled();
+	    });
 	});
     });
 });

@@ -160,12 +160,7 @@
 	    ctx.save();
 	    ctx.translate(this.holder.x(), this.holder.y());
 	    ctx.rotate(this.holder.directionInRadians());
-	    ctx.beginPath();
-	    ctx.moveTo(this.shape.vertexes[0].x(), this.shape.vertexes[0].y());
-	    for(var i = 1; i < this.shape.vertexes.length; i++) {
-		ctx.lineTo(this.shape.vertexes[i].x(), this.shape.vertexes[i].y());
-	    }
-	    ctx.stroke();
+	    this.signal("render", [ctx]);
 	    ctx.restore();
 	},
     });

@@ -179,63 +179,60 @@
 	    ctx.restore();
 	},
     });
-    function Commands () {
-	var self = [];
-	self.clear = function () {
-	    self.push(function (view) {
+    function TurtleRecorder () {
+	return extend(this, {queue: []});
+    }
+    extend(TurtleRecorder.prototype, {
+	clear: function clear () {
+	    this.queue.push(function (view) {
 		view.clear();
 		return;
 	    });
-	};
-	self.move = function () {
-	    var pixels = arguments[0];
-	    self.push(function (view) {
+	},
+	move: function move (pixels) {
+	    this.queue.push(function (view) {
 		view.move(pixels);
 		return;
 	    });
-	};
-	self.turn = function () {
-	    var degrees = arguments[0];
-	    self.push(function (view) {
+	},
+	turn: function turn (degrees) {
+	    this.queue.push(function (view) {
 		view.turn(degrees);
 		return;
 	    });
-	};
-	self.penDown = function () {
-	    self.push(function (view) {
+	},
+	penDown: function penDown () {
+	    this.queue.push(function (view) {
 		view.penDown();
 		return;
 	    });
-	};
-	self.penUp = function () {
-	    self.push(function (view) {
+	},
+	penUp: function penUp () {
+	    this.queue.push(function (view) {
 		view.penDown();
 		return;
 	    });
-	};
-	self.setPosition = function () {
-	    var x = arguments[0];
-	    var y = arguments[1];
-	    self.push(function (view) {
+	},
+	setPosition: function setPosition (x, y) {
+	    this.queue.push(function (view) {
 		view.setPosition(x, y);
 		return;
 	    });
-	};
-	self.setDirection = function () {
-	    var degrees = arguments[0];
-	    self.push(function (view) {
+	},
+	setDirection: function setDirection (degrees) {
+	    this.queue.push(function (view) {
 		view.setDirection(degrees);
 		return;
 	    });
-        };
-	self.play = function () {
-	    for (var i = 0; i < self.length; i++) {
+        },
+	play: function play () {
+	    for (var i = 0; i < this.queue.length; i++) {
 		for (var j = 0; j < arguments.length; j++) {
-		    self[i].apply(self, [arguments[j]]);
+		    this.queue[i].apply(this.queue, [arguments[j]]);
 		}
 	    }
-	};
-        self.playback = function (args) {
+	},
+        playback: function playback (args) {
 	    var opts = extend({
 		interval: 100,
 		opsPerStep: 10
@@ -247,17 +244,16 @@
                 return;
             }
 
-	    var i = 0, limit = self.length;
+	    var queue = this.queue, i = 0, limit = this.queue.length;
 	    (function animate() {
-		do { self[i++].apply(self, [opts.view]) }
+		do { queue[i++].apply(queue, [opts.view]) }
 		while(--limit && limit % opts.opsPerStep);
 		if (limit)
 		    setTimeout(animate, opts.interval);
 	    })();
 	    return;
-        };
-	return self;
-    }
+        }
+    });
     function LogView (out) { // for use with FireBug console or similar
 	var self = this;
 	self.clear = function () {
@@ -341,8 +337,9 @@
     extend(window.Turtle, {
 	Pen: TurtlePen,
 	Costume: TurtleCostume,
+	Recorder: TurtleRecorder
     });
-    window.Commands = Commands;
+    window.Commands = TurtleRecorder;
     window.LogView = LogView;
     window.CanvasView = CanvasView;
 })(this, this.document);

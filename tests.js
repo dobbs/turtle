@@ -59,14 +59,14 @@ test('turtle.move(pixels); // should change turtle.position', function () {
 test('var commands = new Commands(); // should queue turtle commands', function () {
     var q = new Commands();
     q.setPosition(60, 60);
-    equal(q.length, 1);
+    equal(q.queue.length, 1);
     q.penDown();
-    equal(q.length, 2);
+    equal(q.queue.length, 2);
     for (var i=3; i--;) {
      	q.turn(-120);
 	q.move(50);
     }
-    equal(q.length, 8);
+    equal(q.queue.length, 8);
 });
 
 test('commands.play(view); // should execute each command against the view', function () {

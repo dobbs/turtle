@@ -49,7 +49,7 @@
 	    delete(tool["holder"]);
 	},
     };
-    function Turtle() {
+    function Turtle(/*degrees, [x, y]*/) {
 	return extend(this, {
 	    event_handlers: {},
 	    state: {},
@@ -339,7 +339,12 @@
 	Costume: TurtleCostume,
 	Recorder: TurtleRecorder
     });
-    window.Commands = TurtleRecorder;
+    window.Commands = function Commands () {
+	if (console && console.log) {
+	    console.log("Commands() is deprecated.  See Turtle.Recorder() instead.");
+	}
+	return new Turtle.Recorder();
+    };
     window.LogView = LogView;
     window.CanvasView = CanvasView;
 })(this, this.document);

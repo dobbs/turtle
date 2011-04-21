@@ -69,6 +69,32 @@ describe("Turtle", function () {
     	});
     });
 
+    describe("home", function () {
+    	function random(i, j) {return Math.floor(Math.random()*(j-i+1))+i}
+    	it("should reset direction and position to defaults", function () {
+    	    turtle.position({
+		direction:random(0, 360),
+		x:random(-100, 100),
+		y:random(-100, 100)
+	    });
+    	    turtle.home();
+    	    expect(turtle.direction()).toEqual(0);
+    	    expect(turtle.position()).toEqual([0, 0]);
+    	});
+
+    	it("should reset direction and position to user specified defaults", function () {
+    	    turtle = new Turtle(90, [80, 70]);
+    	    turtle.position({
+		direction:random(0, 360),
+		x:random(-100, 100),
+		y:random(-100, 100)
+	    });
+    	    turtle.home();
+    	    expect(turtle.direction()).toEqual(90);
+    	    expect(turtle.position()).toEqual([80, 70]);
+    	});
+    });
+
     describe("clear", function () {
     	function random(i, j) {return Math.floor(Math.random()*(j-i+1))+i}
     	it("should reset direction and position to defaults", function () {

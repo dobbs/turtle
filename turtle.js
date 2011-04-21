@@ -58,8 +58,8 @@
     function Turtle(/*degrees, [x, y]*/) {
 	return extend(this, {
 	    event_handlers: {},
-	    state: {},
-	    home: (arguments.length == 2) ? {
+	    _position: {},
+	    _home: (arguments.length == 2) ? {
 		direction: arguments[0],
 		x: arguments[1][0], 
 		y: arguments[1][1]
@@ -67,75 +67,82 @@
 	}).clear();
     }
     extend(Turtle.prototype, tool_base, {
-	clear: function clear () {
-	    this.position(this.home);
-	    this.signal("clear", arguments);
+	home: function home() {
+	    this.position(this._home);
 	    return this;
-	},
-	direction: function direction () {
-	    return this.state.direction;
-	},
-	directionInRadians: function directionInRadians () {
-	    return this.direction()*Math.PI/180
 	},
 	position: function position () {
 	    var newposition = arguments[0];
 	    if (typeof newposition === "object") {
 		var errors = [];
 		if (assertNumber(newposition.direction, errors, "direction must be a number")) {
-		    this.state.direction = parseFloat(newposition.direction) % 360;
-		    (this.state.direction < 0) && (this.state.direction += 360);
+		    this._position.direction = parseFloat(newposition.direction) % 360;
+		    (this._position.direction < 0) && (this._position.direction += 360);
 		}
 		if (assertNumber(newposition.x, errors, "x must be a number")) {
-		    this.state.x = parseFloat(newposition.x);
+		    this._position.x = parseFloat(newposition.x);
 		}
 		if (assertNumber(newposition.y, errors, "y must be a number")) {
-		    this.state.y = parseFloat(newposition.y);
+		    this._position.y = parseFloat(newposition.y);
 		}
 		if (errors.length) {
 		    throw new TypeError(errors.join("\n"));
 		}
 		return this;
 	    }
-	    return [this.state.x, this.state.y];
-	},
-	x: function x () {
-	    return this.state.x;
-	},
-	y: function y () {
-	    return this.state.y;
-	},
-	setDirection: function setDirection (degrees) {
-	    deprecationWarning(
-		"setDirection(degrees) is deprecated.  Use position({direction:degrees})");
-	    var newposition = {"direction" : degrees};
-	    this.position(newposition);
-	    return this;
-	},
-	setPosition: function setPosition (x, y) {
-	    deprecationWarning(
-		"setPosition(x, y) is deprecated.  Use position({x:pixels, y:pixels})");
-	    var newposition = {"x":x, "y":y};
-	    this.position(newposition);
-	    return this;
+	    return [this._position.x, this._position.y];
 	},
 	turn: function turn (degrees) {
-	    this.position({direction:this.state.direction + parseFloat(degrees)});
+	    this.position({direction:this._position.direction + parseFloat(degrees)});
 	    this.signal("turn", arguments);
 	    return this;
 	},
 	move: function move (pixels) {
 	    var p = parseFloat(pixels);
 	    this.position({
-		x: Math.cos(this.directionInRadians()) * p + this.x(),
-		y: Math.sin(this.directionInRadians()) * p + this.y()
+		x: Math.cos(this.directionInRadians()) * p + this._position.x,
+		y: Math.sin(this.directionInRadians()) * p + this._position.y
 	    });
 	    this.signal("move", arguments);
 	    return this;
 	},
+
+/* will deprecate and remove the following methods someday soon */
+
+	clear: function clear () {
+	    deprecationWarning(
+		"clear() is deprecated.  Use home() instead");
+	    this.home();
+	    this.signal("clear", arguments);
+	    return this;
+	},
+	direction: function direction () {
+	    return this._position.direction;
+	},
+	directionInRadians: function directionInRadians () {
+	    return this.direction()*Math.PI/180
+	},
+	x: function x () {
+	    return this._position.x;
+	},
+	y: function y () {
+	    return this._position.y;
+	},
+	setDirection: function setDirection (degrees) {
+	    deprecationWarning(
+		"setDirection(degrees) is deprecated.  Use position({direction:degrees})");
+	    this.position({"direction" : degrees});
+	    return this;
+	},
+	setPosition: function setPosition (x, y) {
+	    deprecationWarning(
+		"setPosition(x, y) is deprecated.  Use position({x:pixels, y:pixels})");
+	    this.position({"x":x, "y":y});
+	    return this;
+	},
 	clone: function clone () {
 	    return extend(new Turtle(), {
-		state: extend({}, this.state),
+		_position: extend({}, this._position),
 		home: extend({}, this.home),
 		event_handlers: extend({}, this.event_handlers)
 	    });

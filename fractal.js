@@ -1,5 +1,5 @@
-(function () {
-    var q = new Commands();
+(function (window, document, undefined) {
+    var q = new Turtle.Recorder();
     function drawLine (pixels, depth) {
         if (depth > 0) {
             drawLine(pixels/3, depth-1);
@@ -37,19 +37,15 @@
 	return;
     }
     function drawFractal(canvas) {
-	q.setPosition(5, 80);
+	q.position({x:5, y:80});
 	q.penDown();
 	von_koch(90, 3);
 	q.penUp();
-	q.setPosition(105, 55);
+	q.position({x:105, y:55});
 	peano(90, 3);
-	var v = new CanvasView(canvas);
+	var v = new CanvasView(canvas)
 	q.playback({view: v, interval: 5, opsPerStep: 1});
 	return;
     };
-    jQuery(function () {
-	var canvas = (jQuery('canvas.fractal:first').get())[0];
-	drawFractal(canvas);
-	return;
-    });
-})();
+    window.drawFractal = drawFractal;
+})(this, this.document);

@@ -21,51 +21,5 @@
   jasmine.getEnv().execute();
 </script>
 
-<style type="text/css">
-canvas {border: 1pt solid black;}
-</style>
-<canvas id="canvas" width="200" height="200"></canvas>
-
-<script type="text/javascript">
-(function end_body (window, document, undefined){
-    var turtle = new Turtle();
-    var costume_pen = new Turtle.Pen();
-    turtle.use({pen: costume_pen});
-    turtle.pen.down();
-    turtle.turn(-90);
-    turtle.move(9);
-    turtle.turn(180 - 53);
-    turtle.move(15);
-    turtle.turn(180 - 37 - 37);
-    turtle.move(15);
-    turtle.turn(180 - 53);
-    turtle.move(9);
-    turtle.pen.up();
-    turtle.position({direction: 45, x:50, y:50});
-    var context = document.getElementById('canvas').getContext('2d');
-    turtle.drop("pen");
-    var costume = new Turtle.Costume();
-    costume.use({"shape": costume_pen});
-    turtle.use({
-        pen: new Turtle.Pen(),
-        costume: costume,
-    });
-    turtle.pen.down();
-    turtle.turn(-90).move(40).turn(135).move(50);
-
-    var animation = turtle.pen.animation(context);
-    (function animate() {
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-        if (animation.next()) {
-           setTimeout(animate, 200);
-        };
-    })();
-
-
-    this.turtle = turtle;
-    this.context = context;
-})(this, this.document);
-</script>
-
 </body>
 </html>

@@ -3,7 +3,6 @@
 <head>
 <title>Turtle Graphics Examples: von Koch snowflake, peano curve, and an interactive shell</title>
 <script type="text/javascript" src="turtle.js"></script>
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.4.4.min.js"></script>
 <script type="text/javascript" src="fractal.js"></script>
 <style type="text/css">
 canvas {border: 1pt solid black;}
@@ -22,8 +21,6 @@ canvas {border: 1pt solid black;}
 </div>
 <div class="example">
 <p>Commands include:</p>
-<p><code>setPosition <em>x</em> <em>y</em></code></p>
-<p><code>setDirection <em>degrees</em></code></p>
 <p><code>penUp</code></p>
 <p><code>penDown</code></p>
 <p><code>move <em>pixels</em></code></p>
@@ -33,6 +30,8 @@ canvas {border: 1pt solid black;}
 </body>
 <script type="text/javascript"><!--
 (function () {
+drawFractal(document.getElementsByClassName("fractal")[0]);
+
 var canvas = document.getElementById('interactivecanvas');
 var commandline = document.getElementById('commandline');
 var view = new CanvasView(canvas);

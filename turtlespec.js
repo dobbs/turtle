@@ -17,6 +17,32 @@ describe("Turtle", function () {
     	});
     });
 
+    describe("position({direction:degrees})", function () {
+	it("should change turtle.direction()", function () {
+    	    turtle.position({direction:30});
+    	    expect(turtle.direction()).toEqual(30);
+	});
+
+    	it("should convert directions greater than 360 degrees", function () {
+    	    turtle.position({direction:400});
+    	    expect(turtle.direction()).toEqual(40);
+    	});
+
+    	it("should convert negative degrees", function () {
+    	    turtle.position({direction:-30});
+    	    expect(turtle.direction()).toEqual(330);
+    	    turtle.position({direction:-400});
+    	    expect(turtle.direction()).toEqual(320);
+    	});
+    });
+
+    describe("position({x:pixels, y:pixels})", function () {
+    	it("should change turtle.position()", function () {
+    	    turtle.position({x:5, y:20});
+    	    expect(turtle.position()).toEqual([5, 20]);
+    	});
+    });
+
     describe("setDirection", function () {
     	it("should change turtle.direction()", function (){
     	    turtle.setDirection(30);
@@ -46,8 +72,11 @@ describe("Turtle", function () {
     describe("clear", function () {
     	function random(i, j) {return Math.floor(Math.random()*(j-i+1))+i}
     	it("should reset direction and position to defaults", function () {
-    	    turtle.setDirection(random(0, 360));
-    	    turtle.setPosition(random(-100, 100), random(-100, 100));
+    	    turtle.position({
+		direction:random(0, 360),
+		x:random(-100, 100),
+		y:random(-100, 100)
+	    });
     	    turtle.clear();
     	    expect(turtle.direction()).toEqual(0);
     	    expect(turtle.position()).toEqual([0, 0]);
@@ -55,8 +84,11 @@ describe("Turtle", function () {
 
     	it("should reset direction and position to user specified defaults", function () {
     	    turtle = new Turtle(90, [80, 70]);
-    	    turtle.setDirection(random(0, 360));
-    	    turtle.setPosition(random(-100, 100), random(-100, 100));
+    	    turtle.position({
+		direction:random(0, 360),
+		x:random(-100, 100),
+		y:random(-100, 100)
+	    });
     	    turtle.clear();
     	    expect(turtle.direction()).toEqual(90);
     	    expect(turtle.position()).toEqual([80, 70]);
@@ -82,7 +114,7 @@ describe("Turtle", function () {
     		},
     	    });
     	    var smallest_angle_of_3_4_5_right_triangle = 37;
-    	    turtle.setDirection(smallest_angle_of_3_4_5_right_triangle);
+    	    turtle.position({direction:smallest_angle_of_3_4_5_right_triangle});
     	    turtle.move(50);
     	    expect(turtle.x()).toRoundTo(40);
     	    expect(turtle.y()).toRoundTo(30);
@@ -260,8 +292,7 @@ describe("Turtle.Pen", function () {
 
 	describe("render", function () {
 	    it("should render a polygon to the given context", function () {
-		turtle.setPosition(20, 30);
-		turtle.setDirection(90);
+		turtle.position({direction: 90, x:20, y:30});
 		context.canvas = {height: 100, width: 200};
 		pen.render(context);
 		expect(context.beginPath).toHaveBeenCalled();
@@ -315,7 +346,7 @@ describe("Turtle.Costume", function () {
 	pen = new Turtle.Pen();
 	pen.holder = new Turtle();
 	[[0, 0], [0, 10], [10, 10], [10, 0]].map(function (point) {
-	    pen.holder.setPosition(point[0], point[1]);
+	    pen.holder.position({x:point[0], y:point[1]});
             pen.addVertex();
 	});
 	costume.use({"shape": pen});

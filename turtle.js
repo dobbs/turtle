@@ -7,6 +7,12 @@
 	}
 	return target;
     }
+    function assertNumber(value, errors, message) {
+	if (value === undefined) {return false;}
+	if (value !== null && isNaN(parseFloat(value))) {errors.push(message); return false;}
+	return true;
+    }
+    function deprecationWarning(message) {if (console && console.log) {console.log(message);}}
     var tool_base = {
 	signal: function signal (method, args) {
 	    if (this.event_handlers[method] && this.event_handlers[method].length) {
@@ -62,8 +68,7 @@
     }
     extend(Turtle.prototype, tool_base, {
 	clear: function clear () {
-	    this.setDirection(this.home.direction);
-	    this.setPosition(this.home.x, this.home.y);
+	    this.position(this.home);
 	    this.signal("clear", arguments);
 	    return this;
 	},
@@ -74,7 +79,25 @@
 	    return this.direction()*Math.PI/180
 	},
 	position: function position () {
-	    return [this.x(), this.y()];
+	    var newposition = arguments[0];
+	    if (typeof newposition === "object") {
+		var errors = [];
+		if (assertNumber(newposition.direction, errors, "direction must be a number")) {
+		    this.state.direction = parseFloat(newposition.direction) % 360;
+		    (this.state.direction < 0) && (this.state.direction += 360);
+		}
+		if (assertNumber(newposition.x, errors, "x must be a number")) {
+		    this.state.x = parseFloat(newposition.x);
+		}
+		if (assertNumber(newposition.y, errors, "y must be a number")) {
+		    this.state.y = parseFloat(newposition.y);
+		}
+		if (errors.length) {
+		    throw new TypeError(errors.join("\n"));
+		}
+		return this;
+	    }
+	    return [this.state.x, this.state.y];
 	},
 	x: function x () {
 	    return this.state.x;
@@ -83,26 +106,30 @@
 	    return this.state.y;
 	},
 	setDirection: function setDirection (degrees) {
-	    this.state.direction = parseFloat(degrees) % 360;
-	    (this.state.direction < 0) && (this.state.direction += 360);
+	    deprecationWarning(
+		"setDirection(degrees) is deprecated.  Use position({direction:degrees})");
+	    var newposition = {"direction" : degrees};
+	    this.position(newposition);
 	    return this;
 	},
 	setPosition: function setPosition (x, y) {
-	    this.state.x = parseFloat(x);
-	    this.state.y = parseFloat(y);
+	    deprecationWarning(
+		"setPosition(x, y) is deprecated.  Use position({x:pixels, y:pixels})");
+	    var newposition = {"x":x, "y":y};
+	    this.position(newposition);
 	    return this;
 	},
 	turn: function turn (degrees) {
-	    this.setDirection(this.state.direction + parseFloat(degrees));
+	    this.position({direction:this.state.direction + parseFloat(degrees)});
 	    this.signal("turn", arguments);
 	    return this;
 	},
 	move: function move (pixels) {
 	    var p = parseFloat(pixels);
-	    this.setPosition(
-		Math.cos(this.directionInRadians()) * p + this.x(),
-		Math.sin(this.directionInRadians()) * p + this.y()
-	    );
+	    this.position({
+		x: Math.cos(this.directionInRadians()) * p + this.x(),
+		y: Math.sin(this.directionInRadians()) * p + this.y()
+	    });
 	    this.signal("move", arguments);
 	    return this;
 	},
@@ -324,12 +351,12 @@
 	    return
 	};
 	self.setPosition = function (x, y) {
-	    self.turtle.setPosition(x, y);
+	    self.turtle.position({"x":x, "y":y});
 	    self.ctx.moveTo(x, y);
 	    return;
 	};
         self.setDirection = function(degrees) {
-	    self.turtle.setDirection(degrees);
+	    self.turtle.position({direction:degrees});
 	    return;
         };
     }
@@ -340,9 +367,7 @@
 	Recorder: TurtleRecorder
     });
     window.Commands = function Commands () {
-	if (console && console.log) {
-	    console.log("Commands() is deprecated.  See Turtle.Recorder() instead.");
-	}
+	deprecationWarning("Commands() is deprecated.  See Turtle.Recorder() instead.");
 	return new Turtle.Recorder();
     };
     window.LogView = LogView;

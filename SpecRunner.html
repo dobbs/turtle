@@ -41,8 +41,7 @@ canvas {border: 1pt solid black;}
     turtle.turn(180 - 53);
     turtle.move(9);
     turtle.pen.up();
-    turtle.setPosition(50, 50);
-    turtle.setDirection(45);
+    turtle.position({direction: 45, x:50, y:50});
     var context = document.getElementById('canvas').getContext('2d');
     turtle.drop("pen");
     var costume = new Turtle.Costume();

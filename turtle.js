@@ -58,55 +58,79 @@
 	    return this;
 	},
     });
+    function TurtlePenDecorator (turtle, context) {
+	return extend(this, {"turtle":turtle, "context":context, "pen": "up"});
+    }
+    extend(TurtlePenDecorator.prototype, {
+	home: function home(/* newhome */) {
+	    if (arguments.length == 0) {this.turtle.home();}
+	    else if (arguments.length == 1) {this.turtle.home(arguments[0])}
+	    return this;
+	},
+	position: function position(/* newposition */) {
+	    if (arguments.length == 0) {return this.turtle.position();}
+	    else if (arguments.length == 1) {return this.turtle.position(arguments[0])}
+	},
+	turn: function turn(degrees) {
+	    this.turtle.turn(degrees);
+	    return this;
+	},
+	move: function move(pixels) {
+	    if (this.pen === "up") {
+		this.turtle.move(pixels);
+		this.context.moveTo(this.turtle.position().x, this.turtle.position().y);
+	    }
+	    else if (this.pen === "down") {
+		this.context.beginPath();
+		this.context.moveTo(this.turtle.position().x, this.turtle.position().y);
+		this.turtle.move(pixels);
+		this.context.lineTo(this.turtle.position().x, this.turtle.position().y);
+		this.context.stroke();
+	    }
+	    return this;
+	},
+	penup: function penup() {
+	    this.pen = "up";
+	    return this;
+	},
+	pendown: function pendown() {
+	    this.pen = "down";
+	    return this;
+	},
+	clear: function clear() {
+	    this.context.clearRect(0,0,this.context.canvas.width, this.context.canvas.height);
+	    this.turtle.home();
+	    return this;
+	}
+    });
     function TurtleRecorder () {
 	return extend(this, {queue: []});
     }
     extend(TurtleRecorder.prototype, {
 	home: function home () {
 	    var newhome = arguments[0]
-	    this.queue.push(function (view) {
-		view.home(newhome);
-		return;
-	    });
+	    this.queue.push(function home(turtle) {turtle.home(newhome); return});
 	},
-	position: function position () {
+	position: function position() {
 	    var newposition = arguments[0];
-	    this.queue.push(function (view) {
-		view.position(newposition);
-		return;
-	    });
+	    this.queue.push(function position(turtle) {turtle.position(newposition); return});
 	},
-	turn: function turn (degrees) {
-	    this.queue.push(function (view) {
-		view.turn(degrees);
-		return;
-	    });
+	turn: function turn(degrees) {
+	    this.queue.push(function turn(turtle) {turtle.turn(degrees); return});
 	},
-	move: function move (pixels) {
-	    this.queue.push(function (view) {
-		view.move(pixels);
-		return;
-	    });
+	move: function move(pixels) {
+	    this.queue.push(function move(turtle) {turtle.move(pixels); return});
 	},
-	clear: function clear () {
-	    this.queue.push(function (view) {
-		view.clear();
-		return;
-	    });
+	pendown: function pendown() {
+	    this.queue.push(function (turtle) {turtle.pendown(); return});
 	},
-	penDown: function penDown () {
-	    this.queue.push(function (view) {
-		view.penDown();
-		return;
-	    });
+	penup: function penup() {
+	    this.queue.push(function penup(turtle) {turtle.penup(); return});
 	},
-	penUp: function penUp () {
-	    this.queue.push(function (view) {
-		view.penDown();
-		return;
-	    });
+	clear: function clear() {
+	    this.queue.push(function clear(turtle) {turtle.clear(); return});
 	},
-	play: function play () {
+	play: function play (/* turtle, [turtle, ...] */) {
 	    for (var i = 0; i < this.queue.length; i++) {
 		for (var j = 0; j < arguments.length; j++) {
 		    this.queue[i].apply(this.queue, [arguments[j]]);
@@ -119,7 +143,7 @@
 		opsPerStep: 10
 	    }, args);
 
-            if(!opts.view) {
+            if(!opts.turtle) {
                 console.log('No rendering target found!');
 
                 return;
@@ -127,7 +151,7 @@
 
 	    var queue = this.queue, i = 0, limit = this.queue.length;
 	    (function animate() {
-		do { queue[i++].apply(queue, [opts.view]) }
+		do { queue[i++].apply(queue, [opts.turtle]) }
 		while(--limit && limit % opts.opsPerStep);
 		if (limit)
 		    setTimeout(animate, opts.interval);
@@ -135,127 +159,9 @@
 	    return;
         }
     });
-    function LogView (out) { // for use with FireBug console or similar
-	var self = this;
-	self.clear = function () {
-	    out.log('clear();');
-	    return;
-	};
-	self.home = function () {
-	    var newhome = arguments[0];
-	    out.log('home(',newhome,');');
-	    return;
-	};
-	self.move = function (pixels) {
-	    out.log('move('+pixels+');');
-	    return;
-	};
-	self.turn = function (degrees) {
-	    out.log('turn('+degrees+');');
-	    return;
-	};
-	self.penDown = function () {
-	    out.log('penDown();');
-	    return;
-	};
-	self.penUp = function () {
-	    out.log('penUp();');
-	    return
-	};
-	self.position = function position (newposition) {
-	    out.log('position(',newposition,');');
-	    return;
-	};
-    }
-    function CanvasView (canvas) {
-	var self = this;
-	self.turtle = new Turtle({
-	    direction: 0,
-	    x: parseInt(canvas.width/2), 
-	    y: parseInt(canvas.height/2)
-	});
-	self.canvas = canvas;
-	self.ctx = canvas.getContext('2d');
-	self.penIsDown = false;
-	self.clear = function () {
-	    self.turtle.home();
-	    self.ctx.clearRect(0, 0, canvas.width, canvas.height);
-	    return;
-	};
-	self.home = function () {
-	    var newhome = arguments[0];
-	    self.turtle.home(newhome);
-	    return;
-	};
-	self.move = function (pixels) {
-	    if (self.penIsDown) {
-		self.ctx.beginPath();
-		self.ctx.moveTo(self.turtle.position().x, self.turtle.position().y);
-		self.turtle.move(pixels);
-		self.ctx.lineTo(self.turtle.position().x, self.turtle.position().y);
-		self.ctx.stroke();
-	    } else {
-		self.ctx.moveTo(self.turtle.position().x, self.turtle.position().y);
-	    }
-	    return;
-	};
-	self.turn = function (degrees) {
-	    self.turtle.turn(degrees);
-	    return;
-	};
-	self.penDown = function () {
-	    self.penIsDown = true;
-	    return;
-	};
-	self.penUp = function () {
-	    self.penIsDown = false;
-	    return
-	};
-	self.position = function (newposition) {
-	    self.turtle.position(newposition);
-	    self.ctx.moveTo(self.turtle.position().x, self.turtle.position().y);
-	    return;
-	};
-    }
-    function CompositeView() {
-	var self = this;
-	self.views = [];
-	for (var i=0; i < arguments.length; i++) {
-	    self.views.push(arguments[i]);
-	}
-	self.clear = function () {self.views.map(function(view){view.clear()})};
-	self.home = function () {
-	    var args = arguments;
-	    self.views.map(function(view){
-		if (args.length) {
-		    view.home.apply(view, args);
-		}
-		else {
-		    view.home();
-		}
-	    });
-	};
-	self.move = function (pixels) {
-	    self.views.map(function(view){view.move(pixels)});
-	};
-	self.turn = function (degrees) {
-	    self.views.map(function(view){view.turn(degrees)});
-	};
-	self.penDown = function () {
-	    self.views.map(function(view){view.penDown()});
-	};
-	self.penUp = function () {
-	    self.views.map(function(view){view.penUp()});
-	};
-	self.position = function (newposition) {
-	    self.views.map(function(view){view.position(newposition)});
-	};
-    }
     window.Turtle = Turtle;
     extend(window.Turtle, {
-	Recorder: TurtleRecorder
+	Recorder: TurtleRecorder,
+	Pen: TurtlePenDecorator
     });
-    window.LogView = LogView;
-    window.CanvasView = CanvasView;
-    window.CompositeView = CompositeView;
 })(this, this.document);

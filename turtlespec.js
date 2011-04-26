@@ -104,3 +104,33 @@ describe("Turtle", function () {
     });
 });
 
+describe("TurtlePenDecorator", function () {
+    var turtle, context;
+    beforeEach(function () {
+	context = jasmine.createSpyObj(
+	    'context', 
+	    'moveTo lineTo beginPath stroke clearRect'.split(' '));
+	turtle = new Turtle.Pen(new Turtle(), context);
+    });
+    it("penDown() should call beginPath and change the pen to down", function () {
+	expect(turtle.pendown).toBeDefined();
+	expect(turtle.pendown().pen).toEqual("down");
+    });
+    it("penUp() should change the pen to up", function () {
+	expect(turtle.penup).toBeDefined();
+	expect(turtle.penup().pen).toEqual("up");
+    });
+    it("move() calls context.moveTo when up and context.lineTo when down", function () {
+	turtle.move(20).pendown().move(30);
+	expect(context.beginPath).toHaveBeenCalled();
+	expect(context.moveTo).toHaveBeenCalledWith(20, 0);
+	expect(context.lineTo).toHaveBeenCalledWith(50, 0);
+	expect(context.stroke).toHaveBeenCalled();
+    });
+    it("clear() calls context.clearRect() and turtle.home()", function () {
+	context.canvas = {width: 200, height: 100};
+	turtle.turn(30).move(40).clear();
+	expect(context.clearRect).toHaveBeenCalledWith(0,0,200,100);
+	expect(turtle.position()).toEqual({direction:0, x:0, y:0});
+    });
+});

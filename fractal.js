@@ -51,5 +51,5 @@
 	});
 	return;
     };
-    window.drawFractal = drawFractal;
+    Turtle.drawFractal = drawFractal;
 })(this, this.document);

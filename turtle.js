@@ -103,6 +103,68 @@
 	    return this;
 	}
     });
+    function TurtleShapeDecorator(turtlepen, turtlerecorder) {
+	return extend(this, {turtle:turtlepen, shape:turtlerecorder});
+    }
+    extend(TurtleShapeDecorator.prototype, {
+	home: function home(/* newhome */) {
+	    this._erase_shape();
+	    if (arguments.length == 0) {this.turtle.home();}
+	    else if (arguments.length == 1) {this.turtle.home(arguments[0])}
+	    this._play_shape_relative_to_current_position();
+	    return this;
+	},
+	position: function position(/* newposition */) {
+	    if (arguments.length == 1) {
+		this._erase_shape();
+		this.turtle.position(arguments[0]);
+		this._play_shape_relative_to_current_position();
+	    }
+	    return this.turtle.position();
+	},
+	turn: function turn(degrees) {
+	    this._erase_shape();
+	    this.turtle.turn(degrees); 
+	    this._play_shape_relative_to_current_position();
+	    return this;
+	},
+	move: function move(pixels) {
+	    this._erase_shape();
+	    this.turtle.move(pixels); 
+	    this._play_shape_relative_to_current_position();
+	    return this;
+	},
+	penup: function penup() {this.turtle.penup(); return this},
+	pendown: function pendown() {this.turtle.pendown(); return this},
+	clear: function clear() {
+	    this.turtle.clear(); 
+	    this._play_shape_relative_to_current_position();
+	    return this;
+	},
+	_play_shape_relative_to_current_position: function _play_relative() {
+	    var context = this.turtle.context;
+	    var position = this.turtle.position();
+	    var save_pen_state = this.turtle.pen;
+	    context.save();
+	    context.translate(position.x, position.y);
+	    context.rotate(radians(position.direction));
+	    this.turtle.penup();
+	    this.turtle.position({direction: 0, x: 0, y:0});
+	    this.turtle.pendown();
+	    this.shape.play(this.turtle);
+	    this.turtle.pen = save_pen_state;
+	    context.restore();
+	    this.turtle.position(position);
+	},
+	_erase_shape: function _erase_shape() {
+	    var context = this.turtle.context;
+	    context.save();
+	    context.strokeStyle = "#ffffff";
+	    context.lineWidth = 2;
+	    this._play_shape_relative_to_current_position();
+	    context.restore();
+	}
+    });
     function TurtleRecorder () {
 	return extend(this, {queue: []});
     }
@@ -110,25 +172,32 @@
 	home: function home () {
 	    var newhome = arguments[0]
 	    this.queue.push(function home(turtle) {turtle.home(newhome); return});
+	    return this;
 	},
 	position: function position() {
 	    var newposition = arguments[0];
 	    this.queue.push(function position(turtle) {turtle.position(newposition); return});
+	    return this;
 	},
 	turn: function turn(degrees) {
 	    this.queue.push(function turn(turtle) {turtle.turn(degrees); return});
+	    return this;
 	},
 	move: function move(pixels) {
 	    this.queue.push(function move(turtle) {turtle.move(pixels); return});
+	    return this;
 	},
 	pendown: function pendown() {
 	    this.queue.push(function (turtle) {turtle.pendown(); return});
+	    return this;
 	},
 	penup: function penup() {
 	    this.queue.push(function penup(turtle) {turtle.penup(); return});
+	    return this;
 	},
 	clear: function clear() {
 	    this.queue.push(function clear(turtle) {turtle.clear(); return});
+	    return this;
 	},
 	play: function play (/* turtle, [turtle, ...] */) {
 	    for (var i = 0; i < this.queue.length; i++) {
@@ -136,6 +205,7 @@
 		    this.queue[i].apply(this.queue, [arguments[j]]);
 		}
 	    }
+	    return this;
 	},
         playback: function playback (args) {
 	    var opts = extend({
@@ -156,12 +226,13 @@
 		if (limit)
 		    setTimeout(animate, opts.interval);
 	    })();
-	    return;
+	    return this;
         }
     });
     window.Turtle = Turtle;
     extend(window.Turtle, {
 	Recorder: TurtleRecorder,
-	Pen: TurtlePenDecorator
+	Pen: TurtlePenDecorator,
+	Shape: TurtleShapeDecorator
     });
 })(this, this.document);

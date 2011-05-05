@@ -134,3 +134,61 @@ describe("TurtlePenDecorator", function () {
 	expect(turtle.position()).toEqual({direction:0, x:0, y:0});
     });
 });
+
+describe("TurtleShapeDecorator", function () {
+    var turtle, shape, context;
+    beforeEach(function () {
+	context = jasmine.createSpyObj(
+	    'context', 
+	    'moveTo lineTo beginPath stroke clearRect translate rotate save restore'.split(' '));
+	shape = new Turtle.Recorder();
+	shape.position({
+	    direction:0, x:0, y:0
+	}).turn(90).move(15).turn(120).move(30).turn(120).move(30).turn(120).move(15);
+	spyOn(shape, "play");
+	pen = new Turtle.Pen(new Turtle(), context);
+	turtle = new Turtle.Shape(pen, shape);
+    });
+    it("should draw the triangle after home()", function () {
+	turtle.home({direction: 60, x:50, y:40});
+	expect(context.save).toHaveBeenCalled();
+	expect(context.translate).toHaveBeenCalledWith(50, 40);
+	expect(context.rotate).toHaveBeenCalledWith(Math.PI/3);
+	expect(shape.play).toHaveBeenCalledWith(pen);
+	expect(context.restore).toHaveBeenCalled();
+    });
+    it("should draw the triangle after changing the position()", function () {
+	turtle.position({direction: 90, x:80, y:70});
+	expect(context.save).toHaveBeenCalled();
+	expect(context.translate).toHaveBeenCalledWith(80, 70);
+	expect(context.rotate).toHaveBeenCalledWith(Math.PI/2);
+	expect(shape.play).toHaveBeenCalledWith(pen);
+	expect(context.restore).toHaveBeenCalled();
+    });
+    it("should draw the triangle after turn()", function () {
+	turtle.turn(30);
+	expect(context.save).toHaveBeenCalled();
+	expect(context.translate).toHaveBeenCalledWith(0, 0);
+	expect(context.rotate).toHaveBeenCalledWith(Math.PI/6);
+	expect(shape.play).toHaveBeenCalledWith(pen);
+	expect(context.restore).toHaveBeenCalled();
+    });
+    it("should draw the triangle after move()", function () {
+	turtle.move(90);
+	expect(context.save).toHaveBeenCalled();
+	expect(context.translate).toHaveBeenCalledWith(90, 0);
+	expect(context.rotate).toHaveBeenCalledWith(0);
+	expect(shape.play).toHaveBeenCalledWith(pen);
+	expect(context.restore).toHaveBeenCalled();
+    });
+    it("should draw the triangle after clear()", function () {
+	context.canvas = {width: 100, height: 80};
+	turtle.clear();
+	expect(context.clearRect).toHaveBeenCalledWith(0, 0, 100, 80);
+	expect(context.save).toHaveBeenCalled();
+	expect(context.translate).toHaveBeenCalledWith(0, 0);
+	expect(context.rotate).toHaveBeenCalledWith(0);
+	expect(shape.play).toHaveBeenCalledWith(pen);
+	expect(context.restore).toHaveBeenCalled();
+    });
+});

@@ -4,6 +4,7 @@
 <title>Turtle Graphics Examples: von Koch snowflake, peano curve, and an interactive shell</title>
 <script type="text/javascript" src="turtle.js"></script>
 <script type="text/javascript" src="fractal.js"></script>
+<script type="text/javascript" src="interactive.js"></script>
 <style type="text/css">
 canvas {border: 1pt solid black;}
 .interactive {float: left; margin-right: 1em;}
@@ -28,29 +29,14 @@ canvas {border: 1pt solid black;}
 <p><code>clear</code></p>
 </div>  
 </body>
-<script type="text/javascript"><!--
-(function () {
-drawFractal(document.getElementsByClassName("fractal")[0]);
-
-var canvas = document.getElementById('interactivecanvas');
-var commandline = document.getElementById('commandline');
-var view = new Turtle.Pen(
-    new Turtle({x: Math.floor(canvas.width/2), y: Math.floor(canvas.height/2)}),
-    canvas.getContext('2d'));
-var t = view.turtle;
-function interpreter () {
-    var args = commandline.value.split(/[ ,.()]/);
-    var command = args.shift();
-    if (typeof(view[command]) === 'function') {
-        view[command].apply(view, args);
-    }
-    commandline.focus();
-    return false;
-}
-commandline.form.onsubmit = interpreter;
-commandline.focus();
-window.onclick = function () {commandline.focus()}
+<script type="text/javascript">
+(function (window, document, undefined) {
+Turtle.drawFractal(document.getElementsByClassName("fractal")[0]);
+Turtle.interactiveCanvas(
+    document.getElementById("interactivecanvas").getContext('2d'),
+    document.getElementById("commandline")
+);
 return;
-})();
---></script>
+})(this, this.document);
+</script>
 </html>

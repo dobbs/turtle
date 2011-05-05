@@ -199,12 +199,8 @@
 	    this.queue.push(function clear(turtle) {turtle.clear(); return});
 	    return this;
 	},
-	play: function play (/* turtle, [turtle, ...] */) {
-	    for (var i = 0; i < this.queue.length; i++) {
-		for (var j = 0; j < arguments.length; j++) {
-		    this.queue[i].apply(this.queue, [arguments[j]]);
-		}
-	    }
+	play: function play (turtle) {
+	    this.queue.map(function(fn){fn.apply(undefined, [turtle])});
 	    return this;
 	},
         playback: function playback (args) {

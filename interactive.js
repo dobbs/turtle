@@ -10,7 +10,7 @@ var commandline = document.getElementById('commandline');
 	    new Turtle.Recorder().turn(-90).move(5).turn(120).move(10).turn(120).move(10).turn(120).move(5)
 	).clear();
 	function interpreter () {
-	    var args = commandline.value.split(/[ ,.()]/);
+	    var args = commandline.value.toLowerCase().split(/[ ,.()]/);
 	    var command = args.shift();
 	    if (typeof(turtle[command]) === 'function') {
 		try {

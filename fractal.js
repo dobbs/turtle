@@ -16,10 +16,10 @@
     }
     function fractalLine(pixels, depth, turns) {
         if (depth > 0) {
-            for (var i = 0; i < turns.length; i++) {
-                recorder.turn(turns[i]);
+	    turns.map(function(degrees) {
+                recorder.turn(degrees);
                 fractalLine(pixels/3, depth-1, turns);
-            }
+	    });
         } else {
             recorder.move(pixels);
         }

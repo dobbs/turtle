@@ -26,6 +26,7 @@ var commandline = document.getElementById('commandline');
 	commandline.form.onsubmit = interpreter;
 	commandline.focus();
 	window.onclick = function () {commandline.focus()}
+	Turtle.interactiveTurtle = turtle;
 	return;
     }
     Turtle.interactiveCanvas = interactiveCanvas;

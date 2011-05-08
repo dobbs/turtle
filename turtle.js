@@ -108,7 +108,7 @@
     }
     extend(TurtleShapeDecorator.prototype, {
 	home: function home(/* newhome */) {
-	    this._erase_shape();
+	    this._restore_background();
 	    if (arguments.length == 0) {this.turtle.home();}
 	    else if (arguments.length == 1) {this.turtle.home(arguments[0])}
 	    this._play_shape_relative_to_current_position();
@@ -116,20 +116,20 @@
 	},
 	position: function position(/* newposition */) {
 	    if (arguments.length == 1) {
-		this._erase_shape();
+		this._restore_background();
 		this.turtle.position(arguments[0]);
 		this._play_shape_relative_to_current_position();
 	    }
 	    return this.turtle.position();
 	},
 	turn: function turn(degrees) {
-	    this._erase_shape();
+	    this._restore_background();
 	    this.turtle.turn(degrees); 
 	    this._play_shape_relative_to_current_position();
 	    return this;
 	},
 	move: function move(pixels) {
-	    this._erase_shape();
+	    this._restore_background();
 	    this.turtle.move(pixels); 
 	    this._play_shape_relative_to_current_position();
 	    return this;
@@ -145,6 +145,7 @@
 	    var context = this.turtle.context;
 	    var position = this.turtle.position();
 	    var save_pen_state = this.turtle.pen;
+	    this._save_background();
 	    context.save();
 	    context.translate(position.x, position.y);
 	    context.rotate(radians(position.direction));
@@ -156,13 +157,15 @@
 	    context.restore();
 	    this.turtle.position(position);
 	},
-	_erase_shape: function _erase_shape() {
+	_save_background: function _save_background () {
 	    var context = this.turtle.context;
-	    context.save();
-	    context.strokeStyle = "#ffffff";
-	    context.lineWidth = 2;
-	    this._play_shape_relative_to_current_position();
-	    context.restore();
+	    this.savedBackground = context.getImageData(
+		0, 0, context.canvas.width, context.canvas.height);
+	},
+	_restore_background: function _restore_background() {
+	    if (typeof(this.savedBackground) === "undefined")
+		return;
+	    this.turtle.context.putImageData(this.savedBackground, 0, 0);
 	}
     });
     function TurtleRecorder () {

@@ -52,8 +52,8 @@
 	move: function move (pixels) {
 	    var p = parseFloat(pixels);
 	    this.position({
-		x: Math.cos(radians(this.position().direction)) * p + this._position.x,
-		y: Math.sin(radians(this.position().direction)) * p + this._position.y
+		x: Math.cos(radians(this._position.direction)) * p + this._position.x,
+		y: Math.sin(radians(this._position.direction)) * p + this._position.y
 	    });
 	    return this;
 	},

@@ -23,7 +23,6 @@
 	}
 	commandline.form.onsubmit = interpreter;
 	commandline.focus();
-	window.onclick = function () {commandline.focus()}
 	Turtle.interactiveTurtle = turtle;
 	return;
     }

@@ -1,6 +1,4 @@
 (function (window, document, undefined) {
-var canvas = document.getElementById('interactivecanvas');
-var commandline = document.getElementById('commandline');
     function interactiveCanvas(context, commandline) {
 	var turtle = new Turtle.Shape(
 	    new Turtle.Pen(

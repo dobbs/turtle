@@ -7,9 +7,12 @@
 <script type="text/javascript" src="interactive.js"></script>
 <style type="text/css">
 canvas {border: 1pt solid black;}
-.interactive {float: left; margin-right: 1em;}
 .interactive-docs p {margin: 0;}
-.interactive-docs p:first-child {margin-bottom: 1em;}
+#js * {display:block;}
+#editor {
+  font-family: "Courier New", Courier, monospace;
+  width: 30em; padding: .5em; margin-top: 1em; border: 1pt solid black;
+}
 </style>
 </head>
 <body>
@@ -28,6 +31,33 @@ canvas {border: 1pt solid black;}
 <p><code>turn <em>degrees</em></code></p>
 <p><code>clear</code></p>
 </div>  
+<form id="js">
+<textarea id="editor" cols="60" rows="40">
+var T = Turtle.interactiveTurtle;
+
+function polygon(sides, pixels) {
+    var angle = 360/parseInt(sides);
+    for(var i = sides; i--;) {
+        T.move(pixels);
+        T.turn(angle);
+    }
+    return;
+}
+
+T.clear();
+T.pendown();
+for(var i = 5; i--;) {
+    polygon(3, 30);
+    T.turn(360/5);
+}
+T.turn(50);
+for(var i = 5; i--;) {
+    polygon(3, 50);
+    T.turn(360/5);
+}
+</textarea>
+<input type="submit" value="run"></input>
+</form>
 </body>
 <script type="text/javascript">
 (function (window, document, undefined) {
@@ -36,6 +66,17 @@ Turtle.interactiveCanvas(
     document.getElementById("interactivecanvas").getContext('2d'),
     document.getElementById("commandline")
 );
+
+var editor = document.getElementById("editor");
+document.getElementById("js").onsubmit = function () {
+    try {
+        eval(editor.value);
+    }
+    catch (err) {
+        console.log(err);
+    }
+    return false;
+}
 return;
 })(this, this.document);
 </script>

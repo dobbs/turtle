@@ -4,15 +4,15 @@
 	return extend(this, {textarea:textarea, storage:storage});
     }
     extend(TurtleEditor.prototype, {
-	save_version: function save_version(name) {
+	saveVersion: function saveVersion(name) {
 	    this.storage.setItem("turtle."+name, this.textarea.value);
 	    return;
 	},
-	load_version: function load_version(name) {
+	loadVersion: function loadVersion(name) {
 	    this.textarea.value = this.storage.getItem("turtle."+name);
 	    return;
 	},
-	delete_version: function delete_version(name) {
+	deleteVersion: function deleteVersion(name) {
 	    this.storage.removeItem("turtle."+name);
 	    return;
 	}

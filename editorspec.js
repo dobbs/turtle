@@ -6,28 +6,28 @@ describe("TurtleEditor", function () {
 	editor = new Turtle.Editor(textarea, storage);
     });
 
-    describe("save_version and load_version", function () {
+    describe("saveVersion and loadVersion", function () {
         it("should save from and restore to the textarea's value", function () {
-            editor.save_version("tuppence");
+            editor.saveVersion("tuppence");
 	    expect(storage.setItem).toHaveBeenCalledWith("turtle.tuppence", "feed the birds");
 	    textarea.value = "";
 	    storage.getItem.andReturn("feed the birds");
-            editor.load_version("tuppence");
+            editor.loadVersion("tuppence");
 	    expect(storage.getItem).toHaveBeenCalledWith("turtle.tuppence");
 	});
 
 	it("should overwrite the previous save if given the same tag", function () {
-            editor.save_version("tuppence");
+            editor.saveVersion("tuppence");
 	    textarea.value = "chim chim cheeroo";
-            editor.save_version("tuppence");
+            editor.saveVersion("tuppence");
 	    expect(storage.setItem).toHaveBeenCalledWith("turtle.tuppence", "chim chim cheeroo");
 	});
     });
 
-    describe("delete_version", function () {
+    describe("deleteVersion", function () {
 	it("should remove a saved version", function () {
-            editor.save_version("tuppence");
-	    editor.delete_version("tuppence");
+            editor.saveVersion("tuppence");
+	    editor.deleteVersion("tuppence");
 	    expect(storage.removeItem).toHaveBeenCalledWith("turtle.tuppence");
 	});
     });

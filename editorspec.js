@@ -1,7 +1,10 @@
 describe("TurtleEditor", function () {
     var editor, textarea, storage;
     beforeEach(function () {
-	textarea = {value: "feed the birds"};
+	textarea = {
+	    value: "feed the birds", 
+	    form:jasmine.createSpyObj("form", ["addEventListener"])
+	};
 	storage = jasmine.createSpyObj("storage", ["setItem", "getItem", "removeItem"]);
 	editor = new Turtle.Editor(textarea, storage);
     });

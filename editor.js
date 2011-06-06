@@ -56,7 +56,7 @@
 	    if (!this.exampleNode){return;}
 	    var node = this.exampleNode.cloneNode();
 	    node.id = "turtle."+name;
-	    node.classList.remove("example");
+	    node.className = "";
 	    node.textContent = name;
 	    node.addEventListener("click", this.versionNodeListener());
 	    this.exampleNode.parentNode.appendChild(node);

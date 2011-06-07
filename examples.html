@@ -15,7 +15,9 @@ canvas {border: 1pt solid black;}
   width: 30em; padding: .5em; margin-top: 1em; border: 1pt solid black;
 }
 #versions {margin-bottom: 1em;}
-#versions a {display: block;}
+#versions .delete {float: right; margin-right: 2em;}
+#versions div:hover {background-color: #ddd;}
+.hide {display:none;}
 </style>
 </head>
 <body>
@@ -70,9 +72,15 @@ T.spiral = function spiral(steps, pixels, degrees) {
 </textarea>
 <input type="submit" value="run"></input>
 </form>
-<div id="versions">
-  <a href="" class="example version">Versions</a>
+<section id="versions">
+<h1>Versions</h1>
+<div class="example hide">
+  <form class="rename-form hide"><input type="text" name="newname" size="60"></form>
+  <a href="" class="load">version</a>
+  <a href="" class="rename">&#x270e;</a>
+  <a href="" class="delete">&#x2715;</a>
 </div>
+</section>
 </body>
 <script type="text/javascript">
 (function (window, document, undefined) {

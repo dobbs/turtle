@@ -230,6 +230,7 @@
     });
     window.Turtle = Turtle;
     extend(window.Turtle, {
+	extend: extend,
 	Recorder: TurtleRecorder,
 	Pen: TurtlePenDecorator,
 	Shape: TurtleShapeDecorator

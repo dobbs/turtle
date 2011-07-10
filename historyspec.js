@@ -1,5 +1,20 @@
 describe("TurtleHistory", function () {
     var thistory, $history;
+    function Event(targetClassName, targetValue) {
+	Turtle.extend(this, {
+            target: {
+		className: targetClassName,
+		getAttribute: function (key) {return {"data-revision": "revision1"}[key];}
+	    }
+        });
+	if (targetValue)
+	    this.target.value = targetValue;
+	return this;
+    }
+    Turtle.extend(Event.prototype, {
+        stopPropagation: function () {},
+        preventDefault: function () {}
+    });
     beforeEach(function(){
         $("#fixture").html('<section id="turtle-history"></section>');
         $history = $("#turtle-history");
@@ -41,45 +56,34 @@ describe("TurtleHistory", function () {
     });
     describe("TurtleHistory internals", function () {
         describe("click and submit listeners", function () {
-            var event;
-            beforeEach(function (){
-                event = {
-                    target: {
-                        getAttribute: function (key) {return {"data-revision": "revision1"}[key];}
-                    },
-                    stopPropagation: function () {},
-                    preventDefault: function () {}
-                };
-            });
             it("dispatches a click from a remove link to the remove method", function () {
                 spyOn(thistory, "remove");
-                event.target.className = "remove";
-                thistory.handleEvent(event);
+                thistory.handleEvent(new Event("remove"));
                 expect(thistory.remove).toHaveBeenCalledWith("revision1");
             });
             it("dispatches a click from a load link to the load method", function () {
                 spyOn(thistory, "load");
-                event.target.className = "load";
-                thistory.handleEvent(event);
+                thistory.handleEvent(new Event("load"));
                 expect(thistory.load).toHaveBeenCalledWith("revision1");
             });
             it("dispatches a click from a rename link to the show_form method", function () {
                 spyOn(thistory, "show_form");
-                event.target.className = "rename";
-                thistory.handleEvent(event);
+                thistory.handleEvent(new Event("rename"));
                 expect(thistory.show_form).toHaveBeenCalledWith("revision1");
             });
             it("dispatches a submit from a rename form to the rename method", function () {
                 spyOn(thistory, "rename");
-                event.target.className = "rename-form";
-                event.target.value = "newname";
-                thistory.handleEvent(event);
+                thistory.handleEvent(new Event("rename-form", "newname"));
                 expect(thistory.rename).toHaveBeenCalledWith("revision1", "newname");
             });
         });
     });
-    xdescribe("renaming a revision", function() {
-        it("reveals the rename form when the rename link is clicked", function () {});
+    describe("renaming a revision", function() {
+        it("reveals the rename form when the rename link is clicked", function () {
+            thistory.appendRevisionNode("revision1");
+	    thistory.handleEvent(new Event("rename"));
+	    expect($("#turtle-history-revision1 form").attr("class")).not.toMatch(/turtle-hide/);
+	});
         it("renames this revision when the rename form is submitted", function () {});
         it("replaces a revision when this one is saved with the same name", function () {});
     });

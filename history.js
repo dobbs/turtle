@@ -1,4 +1,6 @@
 (function(window, document, undefined){
+    var REMOVE = "remove", LOAD = "load", RENAME = "rename", FORM = "rename-form";
+    var HIDE = "turtle-hide";
     var REVISION_HTML = '\
         <div class="revision">\
             <form class="rename-form turtle-hide">\
@@ -17,7 +19,6 @@
         element.addEventListener("click", function(event) {return self.handleEvent(event);});
         return self;
     }
-    var REMOVE = "remove", LOAD = "load", RENAME = "rename", FORM = "rename-form";
     Turtle.extend(TurtleHistory.prototype, {
         fullRevisionName: function(name) {
             return this.element.id+"-"+name;
@@ -52,8 +53,14 @@
         remove: function (revision) {
             var element = document.getElementById(this.fullRevisionName(revision));
             element.parentNode.removeChild(element);
+	    return;
         },
-        show_form: function () {},
+        show_form: function (revision) {
+	    var element = document.getElementById(this.fullRevisionName(revision));
+	    var form = element.getElementsByClassName(FORM)[0];
+	    form.className = form.className.replace(HIDE,'').replace(/ +$/,'');
+	    return;
+	},
         rename: function () {}
     });
     window.Turtle.History = TurtleHistory;

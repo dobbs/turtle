@@ -1,15 +1,15 @@
 describe("TurtleHistory", function () {
     var thistory, $history;
     function Event(targetClassName, targetValue) {
-	Turtle.extend(this, {
+        return Turtle.extend(this, {
             target: {
-		className: targetClassName,
-		getAttribute: function (key) {return {"data-revision": "revision1"}[key];}
-	    }
+                newname: {value: targetValue},
+                className: targetClassName,
+                parentNode: {
+                    getAttribute: function (key) {return {"data-revision": "revision1"}[key];}
+                }
+            }
         });
-	if (targetValue)
-	    this.target.value = targetValue;
-	return this;
     }
     Turtle.extend(Event.prototype, {
         stopPropagation: function () {},
@@ -25,6 +25,7 @@ describe("TurtleHistory", function () {
             thistory.appendRevisionNode("revision1");
             var $result = $("#turtle-history-revision1");
             expect($result.get(0)).toBeTruthy();
+            expect($result.attr("data-revision")).toEqual("revision1");
             expect($result.parent().get(0)).toEqual($history.get(0));
         });
         describe("a new revision", function () {
@@ -55,23 +56,23 @@ describe("TurtleHistory", function () {
         });
     });
     describe("TurtleHistory internals", function () {
-        describe("click and submit listeners", function () {
-            it("dispatches a click from a remove link to the remove method", function () {
+        describe("click and submit listeners dispatch events", function () {
+            it("calls remove(revision) when 'remove' is clicked", function () {
                 spyOn(thistory, "remove");
                 thistory.handleEvent(new Event("remove"));
                 expect(thistory.remove).toHaveBeenCalledWith("revision1");
             });
-            it("dispatches a click from a load link to the load method", function () {
+            it("calls load(revision) when 'load' is clicked", function () {
                 spyOn(thistory, "load");
                 thistory.handleEvent(new Event("load"));
                 expect(thistory.load).toHaveBeenCalledWith("revision1");
             });
-            it("dispatches a click from a rename link to the show_form method", function () {
+            it("calls show_form(revision) when 'rename' is clicked", function () {
                 spyOn(thistory, "show_form");
                 thistory.handleEvent(new Event("rename"));
                 expect(thistory.show_form).toHaveBeenCalledWith("revision1");
             });
-            it("dispatches a submit from a rename form to the rename method", function () {
+            it("calls rename(revision, name) when 'rename' is submitted", function () {
                 spyOn(thistory, "rename");
                 thistory.handleEvent(new Event("rename-form", "newname"));
                 expect(thistory.rename).toHaveBeenCalledWith("revision1", "newname");
@@ -79,12 +80,18 @@ describe("TurtleHistory", function () {
         });
     });
     describe("renaming a revision", function() {
-        it("reveals the rename form when the rename link is clicked", function () {
+        beforeEach(function() {
             thistory.appendRevisionNode("revision1");
-	    thistory.handleEvent(new Event("rename"));
-	    expect($("#turtle-history-revision1 form").attr("class")).not.toMatch(/turtle-hide/);
-	});
-        it("renames this revision when the rename form is submitted", function () {});
-        it("replaces a revision when this one is saved with the same name", function () {});
+        });
+        it("reveals the rename form when the rename link is clicked", function () {
+            thistory.handleEvent(new Event("rename"));
+            expect($("#turtle-history-revision1 form").attr("class")).not.toMatch(/turtle-hide/);
+        });
+        it("renames this revision when the rename form is submitted", function () {
+            thistory.handleEvent(new Event("rename-form", "nifty"));
+            expect($("#turtle-history-revision1").get(0)).toBeUndefined();
+            expect($("#turtle-history-nifty").get(0)).toBeTruthy();
+        });
+        xit("replaces a revision when this one is saved with the same name", function () {});
     });
 });

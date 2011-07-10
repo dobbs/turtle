@@ -29,39 +29,49 @@
             placeholder.innerHTML = REVISION_HTML;
             var newnode = placeholder.getElementsByClassName("revision")[0];
             newnode.setAttribute("id", this.fullRevisionName(name));
+            newnode.setAttribute("data-revision", name);
             newnode.getElementsByClassName(LOAD)[0].textContent = name;
-            newnode.getElementsByClassName(REMOVE)[0].setAttribute("data-revision", name);
+            newnode.getElementsByClassName(FORM)[0].addEventListener("submit", function (e) {
+                return self.handleEvent(e);
+            });
             this.element.appendChild(newnode);
             return;
         },
         handleEvent: function (event) {
             event.stopPropagation(); 
             event.preventDefault();
-            var revision = event.target.getAttribute("data-revision");
-            if (event.target.className == FORM) {
-                this.rename(revision, event.target.value);
+            var revision = event.target.parentNode.getAttribute("data-revision");
+            if (event.target.className.indexOf(FORM) > -1) {
+                this.rename(revision, event.target.newname.value);
                 return false;
             }
             var cases = {};
             cases[REMOVE] = this.remove;
             cases[LOAD] = this.load;
             cases[RENAME] = this.show_form;
-            cases[event.target.className] && cases[event.target.className].call(this, revision);
+            if (cases[event.target.className])
+                cases[event.target.className].call(this, revision);
             return false;
         },
         load: function () {},
         remove: function (revision) {
             var element = document.getElementById(this.fullRevisionName(revision));
             element.parentNode.removeChild(element);
-	    return;
+            return;
         },
         show_form: function (revision) {
-	    var element = document.getElementById(this.fullRevisionName(revision));
-	    var form = element.getElementsByClassName(FORM)[0];
-	    form.className = form.className.replace(HIDE,'').replace(/ +$/,'');
-	    return;
-	},
-        rename: function () {}
+            var element = document.getElementById(this.fullRevisionName(revision));
+            var form = element.getElementsByClassName(FORM)[0];
+            if (form) {
+                form.className = form.className.replace(HIDE,'').replace(/ +$/,'');
+            }
+            return;
+        },
+        rename: function (revision, newname) {
+            this.remove(revision);
+            this.appendRevisionNode(newname);
+            return;
+        }
     });
     window.Turtle.History = TurtleHistory;
 })(this, this.document);

@@ -26,6 +26,9 @@
             element: element,
             storage: new Turtle.Storage(historyID, localStorage || window.localStorage)
         });
+        input.form.addEventListener("submit", function (event) {
+            return self.handleEvent(event);
+        });
         element.addEventListener("click", function(event) {return self.handleEvent(event);});
         return self;
     }
@@ -55,6 +58,10 @@
             event.stopPropagation(); 
             event.preventDefault();
             var revision = event.target.parentNode.getAttribute("data-revision");
+            if (event.target === this.input.form) {
+                this.create(new Date().toJSON());
+                return false;
+            }
             if (event.target.className.indexOf(FORM) > -1) {
                 this.rename(revision, event.target.newname.value);
                 return false;

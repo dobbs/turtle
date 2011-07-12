@@ -98,6 +98,14 @@ describe("TurtleHistory", function () {
                 thistory.handleEvent(new Event("rename-form", "revision1", "newname"));
                 expect(thistory.rename).toHaveBeenCalledWith("revision1", "newname");
             });
+            it("calls create(revision) when the form is submitted", function () {
+                spyOn(Date.prototype, "toJSON").andReturn("20110110T10:10:10");
+                spyOn(thistory, "create");
+                var event = new Event("input-form");
+                event.target = thistory.input.form;
+                thistory.handleEvent(event);
+                expect(thistory.create).toHaveBeenCalledWith("20110110T10:10:10");
+            });
         });
     });
     describe("renaming a revision", function() {

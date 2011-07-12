@@ -23,7 +23,7 @@
         fullRevisionName: function(name) {
             return this.element.id+"-"+name;
         },
-        appendRevisionNode: function appendRevisionNode(name) {
+        create: function create(name) {
             var self = this;
             var placeholder = document.createElement("div");
             placeholder.innerHTML = REVISION_HTML;
@@ -69,7 +69,7 @@
         },
         rename: function (revision, newname) {
             this.remove(revision);
-            this.appendRevisionNode(newname);
+            this.create(newname);
             return;
         }
     });

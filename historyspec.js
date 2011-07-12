@@ -22,7 +22,7 @@ describe("TurtleHistory", function () {
     });
     describe("creating a revision", function () {
         it("adds an element to the history", function () {
-            thistory.appendRevisionNode("revision1");
+            thistory.create("revision1");
             var $result = $("#turtle-history-revision1");
             expect($result.get(0)).toBeTruthy();
             expect($result.attr("data-revision")).toEqual("revision1");
@@ -31,7 +31,7 @@ describe("TurtleHistory", function () {
         describe("a new revision", function () {
             var $revision;
             beforeEach(function () {
-                thistory.appendRevisionNode("revision1");
+                thistory.create("revision1");
                 $revision = $("#turtle-history-revision1");
             });
             it("includes a load link", function () {
@@ -49,7 +49,7 @@ describe("TurtleHistory", function () {
     });
     describe("removing a revision", function () {
         it("removes the element from the history when the remove link is clicked", function () {
-            thistory.appendRevisionNode("revision1");
+            thistory.create("revision1");
             expect($("#turtle-history-revision1").get(0)).toBeTruthy();
             thistory.remove("revision1");
             expect($("#turtle-history-revision1").get(0)).toEqual(null);
@@ -81,7 +81,7 @@ describe("TurtleHistory", function () {
     });
     describe("renaming a revision", function() {
         beforeEach(function() {
-            thistory.appendRevisionNode("revision1");
+            thistory.create("revision1");
         });
         it("reveals the rename form when the rename link is clicked", function () {
             thistory.handleEvent(new Event("rename"));

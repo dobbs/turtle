@@ -25,6 +25,9 @@
         },
         create: function create(name) {
             var self = this;
+            if (document.getElementById(this.fullRevisionName(name))) {
+                return;
+            }
             var placeholder = document.createElement("div");
             placeholder.innerHTML = REVISION_HTML;
             var newnode = placeholder.getElementsByClassName("revision")[0];

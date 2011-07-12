@@ -1,12 +1,14 @@
 describe("TurtleHistory", function () {
     var thistory, $history;
-    function Event(targetClassName, targetValue) {
+    function Event(targetClassName, dataRevision, targetValue) {
+        if (!dataRevision) 
+            dataRevision = "revision1";
         return Turtle.extend(this, {
             target: {
                 newname: {value: targetValue},
                 className: targetClassName,
                 parentNode: {
-                    getAttribute: function (key) {return {"data-revision": "revision1"}[key];}
+                    getAttribute: function (key) {return {"data-revision": dataRevision}[key];}
                 }
             }
         });
@@ -74,7 +76,7 @@ describe("TurtleHistory", function () {
             });
             it("calls rename(revision, name) when 'rename' is submitted", function () {
                 spyOn(thistory, "rename");
-                thistory.handleEvent(new Event("rename-form", "newname"));
+                thistory.handleEvent(new Event("rename-form", "revision1", "newname"));
                 expect(thistory.rename).toHaveBeenCalledWith("revision1", "newname");
             });
         });
@@ -88,10 +90,14 @@ describe("TurtleHistory", function () {
             expect($("#turtle-history-revision1 form").attr("class")).not.toMatch(/turtle-hide/);
         });
         it("renames this revision when the rename form is submitted", function () {
-            thistory.handleEvent(new Event("rename-form", "nifty"));
+            thistory.handleEvent(new Event("rename-form", "revision1", "nifty"));
             expect($("#turtle-history-revision1").get(0)).toBeUndefined();
             expect($("#turtle-history-nifty").get(0)).toBeTruthy();
         });
-        xit("replaces a revision when this one is saved with the same name", function () {});
+        it("should ensure there is only one revision for a given name", function () {
+            thistory.create("revision2");
+            thistory.handleEvent(new Event("rename-form", "revision2", "revision1"));
+            expect($(".revision").length).toEqual(1);
+        });
     });
 });

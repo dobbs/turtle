@@ -1,5 +1,4 @@
 describe("TurtleHistory", function () {
-    var thistory, $history;
     function Event(targetClassName, dataRevision, targetValue) {
         if (!dataRevision) 
             dataRevision = "revision1";
@@ -17,15 +16,30 @@ describe("TurtleHistory", function () {
         stopPropagation: function () {},
         preventDefault: function () {}
     });
+    var thistory, $editor, $history;
     beforeEach(function(){
-        $("#fixture").html('<section id="turtle-history"></section>');
-        $history = $("#turtle-history");
-        thistory = new Turtle.History($history.get(0));
+        $("#fixture").html('<form><textarea name="editor" id="editor"></textarea></form>');
+        $editor = $("#editor");
+        thistory = new Turtle.History($editor.get(0));
+        $history = $("#editor-history");
+    });
+    describe("constructor", function () {
+        it("creates a section for the history UI if none exists", function () {
+            expect($history.get(0)).toBeTruthy();
+            expect($history.get(0).tagName).toEqual("SECTION");
+        });
+        it("uses an existing element for the history UI if one exists", function () {
+            $("#fixture").append(
+                '<div><form><input type="text" name="repl" id="repl"></form></div>'
+                    + '<div id="repl-history"></div>');
+            new Turtle.History($("#repl").get(0));
+            expect($("#repl-history").get(0).tagName).toEqual("DIV");
+        });
     });
     describe("creating a revision", function () {
         it("adds an element to the history", function () {
             thistory.create("revision1");
-            var $result = $("#turtle-history-revision1");
+            var $result = $("#editor-history-revision1");
             expect($result.get(0)).toBeTruthy();
             expect($result.attr("data-revision")).toEqual("revision1");
             expect($result.parent().get(0)).toEqual($history.get(0));
@@ -34,7 +48,7 @@ describe("TurtleHistory", function () {
             var $revision;
             beforeEach(function () {
                 thistory.create("revision1");
-                $revision = $("#turtle-history-revision1");
+                $revision = $("#editor-history-revision1");
             });
             it("includes a load link", function () {
                 var $load = $revision.find("a.load");
@@ -52,9 +66,9 @@ describe("TurtleHistory", function () {
     describe("removing a revision", function () {
         it("removes the element from the history when the remove link is clicked", function () {
             thistory.create("revision1");
-            expect($("#turtle-history-revision1").get(0)).toBeTruthy();
+            expect($("#editor-history-revision1").get(0)).toBeTruthy();
             thistory.remove("revision1");
-            expect($("#turtle-history-revision1").get(0)).toEqual(null);
+            expect($("#editor-history-revision1").get(0)).toEqual(null);
         });
     });
     describe("TurtleHistory internals", function () {
@@ -87,12 +101,12 @@ describe("TurtleHistory", function () {
         });
         it("reveals the rename form when the rename link is clicked", function () {
             thistory.handleEvent(new Event("rename"));
-            expect($("#turtle-history-revision1 form").attr("class")).not.toMatch(/turtle-hide/);
+            expect($("#editor-history-revision1 form").attr("class")).not.toMatch(/turtle-hide/);
         });
         it("renames this revision when the rename form is submitted", function () {
             thistory.handleEvent(new Event("rename-form", "revision1", "nifty"));
-            expect($("#turtle-history-revision1").get(0)).toBeUndefined();
-            expect($("#turtle-history-nifty").get(0)).toBeTruthy();
+            expect($("#editor-history-revision1").get(0)).toBeUndefined();
+            expect($("#editor-history-nifty").get(0)).toBeTruthy();
         });
         it("should ensure there is only one revision for a given name", function () {
             thistory.create("revision2");

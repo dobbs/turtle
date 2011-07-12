@@ -12,8 +12,16 @@
         </div>\
     ';
 
-    function TurtleHistory(element) {
+    function TurtleHistory(input) {
+        var historyID = input.id+"-history";
+        var element = document.getElementById(historyID);
+        if (!element) {
+            element = document.createElement("section");
+            element.setAttribute("id", historyID);
+            input.form.parentNode.appendChild(element);
+        }
         var self = Turtle.extend(this, {
+            prefix: historyID+"-",
             element: element
         });
         element.addEventListener("click", function(event) {return self.handleEvent(event);});
@@ -21,7 +29,7 @@
     }
     Turtle.extend(TurtleHistory.prototype, {
         fullRevisionName: function(name) {
-            return this.element.id+"-"+name;
+            return this.prefix+name;
         },
         create: function create(name) {
             var self = this;
@@ -59,7 +67,8 @@
         load: function () {},
         remove: function (revision) {
             var element = document.getElementById(this.fullRevisionName(revision));
-            element.parentNode.removeChild(element);
+            if (element && element.parentNode && element.parentNode.removeChild)
+                element.parentNode.removeChild(element);
             return;
         },
         show_form: function (revision) {

@@ -12,7 +12,7 @@
         </div>\
     ';
 
-    function TurtleHistory(input) {
+    function TurtleHistory(input, localStorage) {
         var historyID = input.id+"-history";
         var element = document.getElementById(historyID);
         if (!element) {
@@ -22,7 +22,9 @@
         }
         var self = Turtle.extend(this, {
             prefix: historyID+"-",
-            element: element
+            input: input,
+            element: element,
+            storage: new Turtle.Storage(historyID, localStorage || window.localStorage)
         });
         element.addEventListener("click", function(event) {return self.handleEvent(event);});
         return self;
@@ -46,6 +48,7 @@
                 return self.handleEvent(e);
             });
             this.element.appendChild(newnode);
+            this.storage.setItem(name, this.input.value);
             return;
         },
         handleEvent: function (event) {
@@ -64,8 +67,12 @@
                 cases[event.target.className].call(this, revision);
             return false;
         },
-        load: function () {},
+        load: function (revision) {
+            this.input.value = this.storage.getItem(revision);
+            return;
+        },
         remove: function (revision) {
+            this.storage.removeItem(revision);
             var element = document.getElementById(this.fullRevisionName(revision));
             if (element && element.parentNode && element.parentNode.removeChild)
                 element.parentNode.removeChild(element);
@@ -80,6 +87,9 @@
             return;
         },
         rename: function (revision, newname) {
+            this.storage.setItem(newname,
+                                 this.storage.getItem(revision));
+            this.storage.removeItem(revision);
             this.remove(revision);
             this.create(newname);
             return;

@@ -16,11 +16,12 @@ describe("TurtleHistory", function () {
         stopPropagation: function () {},
         preventDefault: function () {}
     });
-    var thistory, $editor, $history;
+    var thistory, $editor, $history, localStorage;
     beforeEach(function(){
         $("#fixture").html('<form><textarea name="editor" id="editor"></textarea></form>');
         $editor = $("#editor");
-        thistory = new Turtle.History($editor.get(0));
+        localStorage = jasmine.createSpyObj("storage", ['setItem', 'getItem', 'removeItem']);
+        thistory = new Turtle.History($editor.get(0), localStorage);
         $history = $("#editor-history");
     });
     describe("constructor", function () {
@@ -38,11 +39,14 @@ describe("TurtleHistory", function () {
     });
     describe("creating a revision", function () {
         it("adds an element to the history", function () {
+            $editor.val("// javascript code");
             thistory.create("revision1");
             var $result = $("#editor-history-revision1");
             expect($result.get(0)).toBeTruthy();
             expect($result.attr("data-revision")).toEqual("revision1");
             expect($result.parent().get(0)).toEqual($history.get(0));
+            expect(localStorage.setItem).toHaveBeenCalledWith(
+                "editor-history.revision1", "// javascript code");
         });
         describe("a new revision", function () {
             var $revision;
@@ -69,6 +73,7 @@ describe("TurtleHistory", function () {
             expect($("#editor-history-revision1").get(0)).toBeTruthy();
             thistory.remove("revision1");
             expect($("#editor-history-revision1").get(0)).toEqual(null);
+            expect(localStorage.removeItem).toHaveBeenCalledWith("editor-history.revision1");
         });
     });
     describe("TurtleHistory internals", function () {
@@ -97,6 +102,7 @@ describe("TurtleHistory", function () {
     });
     describe("renaming a revision", function() {
         beforeEach(function() {
+            $editor.val("// console.log('plugh')");
             thistory.create("revision1");
         });
         it("reveals the rename form when the rename link is clicked", function () {
@@ -105,13 +111,29 @@ describe("TurtleHistory", function () {
         });
         it("renames this revision when the rename form is submitted", function () {
             thistory.handleEvent(new Event("rename-form", "revision1", "nifty"));
+            $editor.val("// console.log('xyzzy')");
             expect($("#editor-history-revision1").get(0)).toBeUndefined();
             expect($("#editor-history-nifty").get(0)).toBeTruthy();
+            expect(localStorage.getItem).toHaveBeenCalledWith("editor-history.revision1");
+            expect(localStorage.setItem).toHaveBeenCalledWith(
+                "editor-history.nifty", "// console.log('plugh')");
+            expect(localStorage.removeItem).toHaveBeenCalledWith("editor-history.revision1");
         });
         it("should ensure there is only one revision for a given name", function () {
             thistory.create("revision2");
             thistory.handleEvent(new Event("rename-form", "revision2", "revision1"));
             expect($(".revision").length).toEqual(1);
+        });
+    });
+    describe("loading a revision", function() {
+        beforeEach(function() {
+            thistory.create("revision1");
+        });
+        it("copies the value from local storage to the value of the editor", function () {
+            $editor.val("// something else");
+            localStorage.getItem.andReturn("// console.log('plugh')");
+            thistory.load("revision1");
+            expect($editor.val()).toEqual("// console.log('plugh')");
         });
     });
 });

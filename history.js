@@ -14,6 +14,8 @@
 
     function TurtleHistory(input, localStorage) {
         var historyID = input.id+"-history";
+        if (!localStorage)
+            localStorage = window.localStorage;
         var element = document.getElementById(historyID);
         if (!element) {
             element = document.createElement("section");
@@ -24,7 +26,7 @@
             prefix: historyID+"-",
             input: input,
             element: element,
-            storage: new Turtle.Storage(historyID, localStorage || window.localStorage)
+            storage: new Turtle.Storage(historyID, localStorage)
         });
         input.form.addEventListener("submit", function (event) {
             return self.handleEvent(event);
@@ -35,6 +37,13 @@
     Turtle.extend(TurtleHistory.prototype, {
         fullRevisionName: function(name) {
             return this.prefix+name;
+        },
+        syncLocalStorage: function syncLocalStorage() {
+            var self = this;
+            self.element.innerHTML = "";
+            var keys = self.storage.keys();
+            keys.map(function(key) {self.create(key)});
+            return;
         },
         create: function create(name) {
             var self = this;

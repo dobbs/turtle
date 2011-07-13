@@ -37,6 +37,17 @@ describe("TurtleHistory", function () {
             expect($("#repl-history").get(0).tagName).toEqual("DIV");
         });
     });
+    describe("syncLocalStorage", function () {
+        it("creates entries for each scoped revision in localStorage", function () {
+            spyOn(Turtle.Storage.prototype, "keys").andReturn(["bar", "baz", "foo"]);
+            thistory.create("revision1");
+            thistory.syncLocalStorage();
+            expect($("#editor-history-revision1").get(0)).toEqual(null);
+            expect($("#editor-history-foo .load").text()).toEqual("foo");
+            expect($("#editor-history-bar .load").text()).toEqual("bar");
+            expect($("#editor-history-baz .load").text()).toEqual("baz");
+        });
+    });
     describe("creating a revision", function () {
         it("adds an element to the history", function () {
             $editor.val("// javascript code");

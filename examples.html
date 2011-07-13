@@ -15,10 +15,11 @@ canvas {border: 1pt solid black;}
   font-family: "Courier New", Courier, monospace;
   width: 30em; padding: .5em; margin-top: 1em; border: 1pt solid black;
 }
-#editor-history {margin-bottom: 1em;}
-#editor-history .remove {float: right; margin-right: 2em;}
-#editor-history div:hover {background-color: #ddd;}
+#editor-history, #commandline-history {margin-bottom: 1em;}
+#editor-history .remove, #commandline-history .remove {float: right; margin-right: 2em;}
+#editor-history div:hover, #commandline-history div:hover {background-color: #ddd;}
 .turtle-hide {display:none;}
+#commandline-history-show {text-decoration: none;}
 </style>
 </head>
 <body>
@@ -28,6 +29,7 @@ canvas {border: 1pt solid black;}
 <div class="interactive">
 <canvas id="interactivecanvas" width="205" height="200"></canvas>
 <form><input id="commandline" type="text" size="36" name="commandline"></form>
+<a href="" id="commandline-history-show">&#x25BA;</a><section id="commandline-history" class="turtle-hide"></section>
 </div>
 <div class="interactive-docs">
 <p>Commands include:</p>
@@ -78,14 +80,30 @@ T.spiral = function spiral(steps, pixels, degrees) {
 <script type="text/javascript">
 (function (window, document, undefined) {
 Turtle.drawFractal(document.getElementsByClassName("fractal")[0]);
+var commandline = document.getElementById("commandline");
 Turtle.interactiveCanvas(
     document.getElementById("interactivecanvas").getContext('2d'),
-    document.getElementById("commandline")
+    commandline
 );
+window.commandline_history = new Turtle.History(commandline, window.localStorage);
+window.commandline_history.syncLocalStorage();
+
+document.getElementById("commandline-history-show").addEventListener("click", function (event) {
+    event.stopPropagation();
+    event.preventDefault();
+    if (window.commandline_history.element.className.indexOf("turtle-hide") != -1) {
+        event.target.innerHTML = "&#x25bc";
+        window.commandline_history.element.className = window.commandline_history.element.className.replace("turtle-hide", "").replace(/ +$/, "");
+   }
+    else {
+        event.target.innerHTML = "&#x25ba";
+        window.commandline_history.element.className = window.commandline_history.element.className.replace(/$/, " turtle-hide");
+    }
+    console.log(event.target.text);
+    return false;
+});
 
 var editor = document.getElementById("editor");
-window.editor_history = new Turtle.History(editor, window.localStorage);
-window.editor_history.syncLocalStorage();
 editor.form.addEventListener("submit", function (event) {
     event.stopPropagation();
     event.preventDefault();
@@ -93,6 +111,8 @@ editor.form.addEventListener("submit", function (event) {
     catch (err) {console.log(err)};
     return false;
 }); 
+window.editor_history = new Turtle.History(editor, window.localStorage);
+window.editor_history.syncLocalStorage();
 return;
 })(this, this.document);
 </script>

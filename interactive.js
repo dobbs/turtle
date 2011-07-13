@@ -21,7 +21,7 @@
 	    commandline.focus();
 	    return false;
 	}
-	commandline.form.onsubmit = interpreter;
+	commandline.form.addEventListener("submit", interpreter);
 	commandline.focus();
 	Turtle.interactiveTurtle = turtle;
 	return;

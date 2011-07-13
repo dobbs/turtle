@@ -3,7 +3,8 @@
 <head>
 <title>Turtle Graphics Examples: von Koch snowflake, peano curve, and an interactive shell</title>
 <script type="text/javascript" src="turtle.js"></script>
-<script type="text/javascript" src="editor.js"></script>
+<script type="text/javascript" src="storage.js"></script>
+<script type="text/javascript" src="history.js"></script>
 <script type="text/javascript" src="fractal.js"></script>
 <script type="text/javascript" src="interactive.js"></script>
 <style type="text/css">
@@ -14,10 +15,10 @@ canvas {border: 1pt solid black;}
   font-family: "Courier New", Courier, monospace;
   width: 30em; padding: .5em; margin-top: 1em; border: 1pt solid black;
 }
-#versions {margin-bottom: 1em;}
-#versions .delete {float: right; margin-right: 2em;}
-#versions div:hover {background-color: #ddd;}
-.hide {display:none;}
+#editor-history {margin-bottom: 1em;}
+#editor-history .remove {float: right; margin-right: 2em;}
+#editor-history div:hover {background-color: #ddd;}
+.turtle-hide {display:none;}
 </style>
 </head>
 <body>
@@ -72,15 +73,7 @@ T.spiral = function spiral(steps, pixels, degrees) {
 </textarea>
 <input type="submit" value="run"></input>
 </form>
-<section id="versions">
-<h1>Versions</h1>
-<div class="example hide">
-  <form class="rename-form hide"><input type="text" name="newname" size="60"></form>
-  <a href="" class="load">version</a>
-  <a href="" class="rename">&#x270e;</a>
-  <a href="" class="delete">&#x2715;</a>
-</div>
-</section>
+<section id="editor-history"></section>
 </body>
 <script type="text/javascript">
 (function (window, document, undefined) {
@@ -91,9 +84,15 @@ Turtle.interactiveCanvas(
 );
 
 var editor = document.getElementById("editor");
-var versions = document.getElementById("versions");
-window.editor = new Turtle.Editor(editor, window.localStorage, versions);
-window.editor.versionReady();
+window.editor_history = new Turtle.History(editor, window.localStorage);
+window.editor_history.syncLocalStorage();
+editor.form.addEventListener("submit", function (event) {
+    event.stopPropagation();
+    event.preventDefault();
+    try {eval(editor.value)}
+    catch (err) {console.log(err)};
+    return false;
+}); 
 return;
 })(this, this.document);
 </script>

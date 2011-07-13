@@ -42,10 +42,13 @@
             var self = this;
             self.element.innerHTML = "";
             var keys = self.storage.keys();
-            keys.map(function(key) {self.create(key)});
+            keys.map(function(key) {self.createWithoutSave(key)});
             return;
         },
-        create: function create(name) {
+        createWithoutSave: function createWithoutSave(name) {
+            return this.create(name, true);
+        },
+        create: function create(name, withoutSave) {
             var self = this;
             if (document.getElementById(this.fullRevisionName(name))) {
                 return;
@@ -60,7 +63,8 @@
                 return self.handleEvent(e);
             });
             this.element.appendChild(newnode);
-            this.storage.setItem(name, this.input.value);
+            if (!withoutSave)
+                this.storage.setItem(name, this.input.value);
             return;
         },
         handleEvent: function (event) {

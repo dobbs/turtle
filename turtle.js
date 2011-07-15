@@ -168,10 +168,10 @@
 	    this.turtle.context.putImageData(this.savedBackground, 0, 0);
 	}
     });
-    function TurtleRecorder () {
+    function TurtleCommandRecorder () {
 	return extend(this, {queue: []});
     }
-    extend(TurtleRecorder.prototype, {
+    extend(TurtleCommandRecorder.prototype, {
 	home: function home () {
 	    var newhome = arguments[0]
 	    this.queue.push(function home(turtle) {turtle.home(newhome); return});
@@ -202,36 +202,30 @@
 	    this.queue.push(function clear(turtle) {turtle.clear(); return});
 	    return this;
 	},
-	play: function play (turtle) {
-	    this.queue.map(function(fn){fn.apply(undefined, [turtle])});
+	play: function play (turtle, interval, commandsPerInterval) {
+            if (interval == undefined) {
+	        this.queue.map(function(fn){fn.apply(undefined, [turtle])});
+            }
+            else {
+                if (!commandsPerInterval)
+                    commandsPerInterval = 1;
+	        var queue = this.queue, i = 0, limit = this.queue.length;
+                (function animate() {
+                    do {
+                        queue[i++].apply(undefined, [turtle]);
+                    }
+                    while (--limit && limit % commandsPerInterval);
+                    if (limit)
+                        setTimeout(animate, interval);
+                })();
+            }
 	    return this;
 	},
-        playback: function playback (args) {
-	    var opts = extend({
-		interval: 100,
-		opsPerStep: 10
-	    }, args);
-
-            if(!opts.turtle) {
-                console.log('No rendering target found!');
-
-                return;
-            }
-
-	    var queue = this.queue, i = 0, limit = this.queue.length;
-	    (function animate() {
-		do { queue[i++].apply(queue, [opts.turtle]) }
-		while(--limit && limit % opts.opsPerStep);
-		if (limit)
-		    setTimeout(animate, opts.interval);
-	    })();
-	    return this;
-        }
     });
     window.Turtle = Turtle;
     extend(window.Turtle, {
 	extend: extend,
-	Recorder: TurtleRecorder,
+	Recorder: TurtleCommandRecorder,
 	Pen: TurtlePenDecorator,
 	Shape: TurtleShapeDecorator
     });

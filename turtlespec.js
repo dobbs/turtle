@@ -112,11 +112,11 @@ describe("TurtlePenDecorator", function () {
 	    'moveTo lineTo beginPath stroke clearRect'.split(' '));
 	turtle = new Turtle.Pen(new Turtle(), context);
     });
-    it("penDown() should call beginPath and change the pen to down", function () {
+    it("pendown() should call beginPath and change the pen to down", function () {
 	expect(turtle.pendown).toBeDefined();
 	expect(turtle.pendown().pen).toEqual("down");
     });
-    it("penUp() should change the pen to up", function () {
+    it("penup() should change the pen to up", function () {
 	expect(turtle.penup).toBeDefined();
 	expect(turtle.penup().pen).toEqual("up");
     });
@@ -211,5 +211,121 @@ describe("TurtleShapeDecorator", function () {
 	turtle.move(90).turn(90);
 	expect(context.getImageData).toHaveBeenCalled();
 	expect(context.putImageData).toHaveBeenCalled();
+    });
+});
+
+describe("TurtleCommandRecorder", function () {
+    var turtle, recorder;
+    beforeEach(function () {
+        turtle = jasmine.createSpyObj("turtle", [
+            "home", "position", "turn", "move", "pendown", "penup", "clear"
+        ]);
+        recorder = new Turtle.Recorder();
+    });
+    it("should record the core turtle commands: home, position, turn, and move", function () {
+        recorder.home().position({x: 10, y:20, direction:30}).turn(40).move(50);
+        expect(recorder.queue.length).toEqual(4);
+        recorder.queue[0].apply(undefined, [turtle]);
+        expect(turtle.home).toHaveBeenCalled();
+        recorder.queue[1].apply(undefined, [turtle]);
+        expect(turtle.position).toHaveBeenCalledWith({x: 10, y: 20, direction: 30});
+        recorder.queue[2].apply(undefined, [turtle]);
+        expect(turtle.turn).toHaveBeenCalledWith(40);
+        recorder.queue[3].apply(undefined, [turtle]);
+        expect(turtle.move).toHaveBeenCalledWith(50);
+    });
+    it("should record the TurtlePenDecorator commands: pendown and penup", function () {
+        recorder.pendown().penup();
+        expect(recorder.queue.length).toEqual(2);
+        recorder.queue[0].apply(undefined, [turtle]);
+        expect(turtle.pendown).toHaveBeenCalled();
+        recorder.queue[1].apply(undefined, [turtle]);
+        expect(turtle.penup).toHaveBeenCalled();
+    });
+    it("should be able to play() back all recorded commands", function () {
+        recorder.home().position({x: 10, y:20, direction:30}).turn(40).move(50).pendown().penup();
+        recorder.play(turtle);
+        expect(turtle.home).toHaveBeenCalled();
+        expect(turtle.position).toHaveBeenCalledWith({x: 10, y: 20, direction: 30});
+        expect(turtle.turn).toHaveBeenCalledWith(40);
+        expect(turtle.move).toHaveBeenCalledWith(50);
+        expect(turtle.pendown).toHaveBeenCalled();
+        expect(turtle.penup).toHaveBeenCalled();
+    });
+    it("should be able to play() back all recorded commands animated", function () {
+        recorder.home().position({x: 10, y:20, direction:30}).turn(40).move(50).pendown().penup();
+        runs(function () {
+            recorder.play(turtle, 50);
+            expect(turtle.home).toHaveBeenCalled();
+            expect(turtle.position).not.toHaveBeenCalled();
+        });
+        waits(60);
+        runs(function () {
+            expect(turtle.position).toHaveBeenCalled();
+            expect(turtle.turn).not.toHaveBeenCalled();
+        });
+        waits(60);
+        runs(function () {
+            expect(turtle.turn).toHaveBeenCalledWith(40);
+            expect(turtle.move).not.toHaveBeenCalled();
+        });
+        waits(60);
+        runs(function () {
+            expect(turtle.move).toHaveBeenCalledWith(50);
+            expect(turtle.pendown).not.toHaveBeenCalled();
+        });
+        waits(60);
+        runs(function () {
+            expect(turtle.pendown).toHaveBeenCalled();
+            expect(turtle.penup).not.toHaveBeenCalled();
+        });
+        waits(60);
+        runs(function () {
+            expect(turtle.penup).toHaveBeenCalled();
+        });
+    });
+    it("should be able to animate recorded commands in chunks", function () {
+        console.log("BEGIN");
+        runs(function () {
+            recorder.turn(0).move(5);
+            recorder.turn(10).move(15);
+            recorder.turn(20).move(25);
+            recorder.turn(30).move(35);
+            recorder.turn(40).move(45);
+            recorder.turn(50).move(55);
+            recorder.turn(60).move(65);
+            console.log("RECORDED... now PLAY");
+            recorder.play(turtle, 50, 4);
+        });
+        waits(51);
+        runs(function () {
+            expect(turtle.turn).toHaveBeenCalledWith(0);
+            expect(turtle.move).toHaveBeenCalledWith(5);
+            expect(turtle.turn).toHaveBeenCalledWith(10);
+            expect(turtle.move).toHaveBeenCalledWith(15);
+            expect(turtle.turn).not.toHaveBeenCalledWith(30);
+        });
+        waits(51);
+        runs(function () {
+            expect(turtle.turn).toHaveBeenCalledWith(20);
+            expect(turtle.move).toHaveBeenCalledWith(25);
+            expect(turtle.turn).toHaveBeenCalledWith(30);
+            expect(turtle.move).toHaveBeenCalledWith(35);
+            expect(turtle.turn).not.toHaveBeenCalledWith(50);
+        });
+        waits(51);
+        runs(function () {
+            expect(turtle.turn).toHaveBeenCalledWith(40);
+            expect(turtle.move).toHaveBeenCalledWith(45);
+            expect(turtle.turn).toHaveBeenCalledWith(50);
+            expect(turtle.move).toHaveBeenCalledWith(55);
+            expect(turtle.turn).not.toHaveBeenCalledWith(70);
+        });
+        waits(120);
+        runs(function () {
+            expect(turtle.turn).toHaveBeenCalledWith(60);
+            expect(turtle.move).toHaveBeenCalledWith(65);
+            expect(turtle.turn).not.toHaveBeenCalledWith(70);
+        });
     });
 });

@@ -44,11 +44,7 @@
 	recorder.position({x:105, y:55});
 	recorder.pendown();
 	peano(90, 3);
-	recorder.playback({
-	    turtle: new Turtle.Pen(new Turtle(), canvas.getContext('2d')),
-	    interval: 5, 
-	    opsPerStep: 1
-	});
+	recorder.play(new Turtle.Pen(new Turtle(), canvas.getContext('2d')), 5, 1);
 	return;
     };
     Turtle.drawFractal = drawFractal;

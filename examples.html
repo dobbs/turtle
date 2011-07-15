@@ -29,7 +29,7 @@ canvas {border: 1pt solid black;}
 <div class="interactive">
 <canvas id="interactivecanvas" width="205" height="200"></canvas>
 <form><input id="commandline" type="text" size="36" name="commandline"></form>
-<a href="" id="commandline-history-show">&#x25BA;</a><section id="commandline-history" class="turtle-hide"></section>
+<a href="" id="commandline-history-show">&#x25BA; History</a><section id="commandline-history" class="turtle-hide"></section>
 </div>
 <div class="interactive-docs">
 <p>Commands include:</p>
@@ -92,11 +92,11 @@ document.getElementById("commandline-history-show").addEventListener("click", fu
     event.stopPropagation();
     event.preventDefault();
     if (window.commandline_history.element.className.indexOf("turtle-hide") != -1) {
-        event.target.innerHTML = "&#x25bc";
+        event.target.innerHTML = "&#x25bc History";
         window.commandline_history.element.className = window.commandline_history.element.className.replace("turtle-hide", "").replace(/ +$/, "");
    }
     else {
-        event.target.innerHTML = "&#x25ba";
+        event.target.innerHTML = "&#x25ba History";
         window.commandline_history.element.className = window.commandline_history.element.className.replace(/$/, " turtle-hide");
     }
     console.log(event.target.text);

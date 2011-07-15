@@ -12,7 +12,7 @@
         </div>\
     ';
 
-    function TurtleHistory(input, localStorage) {
+    function TurtleHistory(input, localStorage, options) {
         var historyID = input.id+"-history";
         if (!localStorage)
             localStorage = window.localStorage;
@@ -22,12 +22,12 @@
             element.setAttribute("id", historyID);
             input.form.parentNode.appendChild(element);
         }
-        var self = Turtle.extend(this, {
+        var self = Turtle.extend(this, Turtle.extend({
             prefix: historyID+"-",
             input: input,
             element: element,
             storage: new Turtle.Storage(historyID, localStorage)
-        });
+        }, options));
         input.form.addEventListener("submit", function (event) {
             return self.handleEvent(event);
         });
@@ -72,7 +72,9 @@
             event.preventDefault();
             var revision = event.target.parentNode.getAttribute("data-revision");
             if (event.target === this.input.form) {
-                this.create(new Date().toJSON());
+                var revisionName = this.useInputValueForRevisionName ? 
+                    this.input.value : new Date().toJSON();
+                this.create(revisionName);
                 return false;
             }
             if (event.target.className.indexOf(FORM) > -1) {
@@ -89,6 +91,9 @@
         },
         load: function (revision) {
             this.input.value = this.storage.getItem(revision);
+            try {eval(this.input.value)}
+            catch(err) {console.log(err)}
+            this.input.focus();
             return;
         },
         remove: function (revision) {

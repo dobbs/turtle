@@ -117,6 +117,17 @@ describe("TurtleHistory", function () {
                 thistory.handleEvent(event);
                 expect(thistory.create).toHaveBeenCalledWith("20110110T10:10:10");
             });
+            it("allows the client to override default revision names", function () {
+                thistory = new Turtle.History($editor.get(0), localStorage, {
+                    useInputValueForRevisionName: true
+                });
+                spyOn(thistory, "create");
+                var event = new Event("input-form");
+                thistory.input.value = "my revision name"
+                event.target = thistory.input.form;
+                thistory.handleEvent(event);
+                expect(thistory.create).toHaveBeenCalledWith("my revision name");
+            });
         });
     });
     describe("renaming a revision", function() {
@@ -150,9 +161,11 @@ describe("TurtleHistory", function () {
         });
         it("copies the value from local storage to the value of the editor", function () {
             $editor.val("// something else");
-            localStorage.getItem.andReturn("// console.log('plugh')");
+            localStorage.getItem.andReturn("this.inputValueWasEvaluated = true;");
+            expect(thistory.inputValueWasEvaluated).not.toBeTruthy();
             thistory.load("revision1");
-            expect($editor.val()).toEqual("// console.log('plugh')");
+            expect($editor.val()).toEqual("this.inputValueWasEvaluated = true;");
+            expect(thistory.inputValueWasEvaluated).toBeTruthy();
         });
     });
 });

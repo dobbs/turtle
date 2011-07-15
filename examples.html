@@ -85,7 +85,9 @@ Turtle.interactiveCanvas(
     document.getElementById("interactivecanvas").getContext('2d'),
     commandline
 );
-window.commandline_history = new Turtle.History(commandline, window.localStorage);
+window.commandline_history = new Turtle.History(commandline, window.localStorage, {
+    useInputValueForRevisionName: true
+});
 window.commandline_history.syncLocalStorage();
 
 document.getElementById("commandline-history-show").addEventListener("click", function (event) {

@@ -285,7 +285,6 @@ describe("TurtleCommandRecorder", function () {
         });
     });
     it("should be able to animate recorded commands in chunks", function () {
-        console.log("BEGIN");
         runs(function () {
             recorder.turn(0).move(5);
             recorder.turn(10).move(15);
@@ -294,7 +293,6 @@ describe("TurtleCommandRecorder", function () {
             recorder.turn(40).move(45);
             recorder.turn(50).move(55);
             recorder.turn(60).move(65);
-            console.log("RECORDED... now PLAY");
             recorder.play(turtle, 50, 4);
         });
         waits(51);

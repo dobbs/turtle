@@ -93,7 +93,6 @@
             this.input.value = this.storage.getItem(revision);
             try {eval(this.input.value)}
             catch(err) {console.log(err)}
-            this.input.focus();
             return;
         },
         remove: function (revision) {

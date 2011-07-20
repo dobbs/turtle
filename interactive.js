@@ -7,23 +7,7 @@
 		context),
 	    new Turtle.Recorder().turn(-90).move(5).turn(120).move(10).turn(120).move(10).turn(120).move(5)
 	).clear();
-	function interpreter (event) {
-            event.stopPropagation();
-            event.preventDefault();
-	    var args = commandline.value.toLowerCase().split(/[ ,.()]/);
-	    var command = args.shift();
-	    if (typeof(turtle[command]) === 'function') {
-		try {
-		    turtle[command].apply(turtle, args);
-		}
-		catch(err) {
-		    console.log(err,': ', command, args);
-		}
-	    }
-	    commandline.focus();
-	    return false;
-	}
-	commandline.form.addEventListener("submit", interpreter);
+        new Turtle.ShellLite(commandline, turtle);
 	commandline.focus();
 	Turtle.interactiveTurtle = turtle;
 	return;

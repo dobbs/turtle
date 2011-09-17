@@ -166,11 +166,21 @@ describe("TurtleHistory", function () {
         });
         it("copies the value from local storage to the value of the editor", function () {
             $editor.val("// something else");
-            localStorage.getItem.andReturn("this.inputValueWasEvaluated = true;");
+            localStorage.getItem.andReturn("// changed it");
             expect(thistory.inputValueWasEvaluated).not.toBeTruthy();
             thistory.load("revision1");
-            expect($editor.val()).toEqual("this.inputValueWasEvaluated = true;");
-            expect(thistory.inputValueWasEvaluated).toBeTruthy();
+            expect($editor.val()).toEqual("// changed it");
+        });
+        it("sends a 'change' signal the input element", function () {
+            var signaled = false;
+            $editor.bind('change', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                signaled = true; 
+                return false;
+            });
+            thistory.load("revision1");
+            expect(signaled).toBeTruthy();
         });
     });
 });

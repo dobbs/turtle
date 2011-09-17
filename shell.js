@@ -25,7 +25,12 @@
             Turtle.extend(self, {scope: scope, handleEvent: handleEventBySplit})
         else
             Turtle.extend(self, {handleEvent: handleEventByEval});
-        inputElement.form.addEventListener("submit", function (e) {return self.handleEvent(e)});
+        inputElement.form.addEventListener("submit", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        });
+        inputElement.addEventListener("change", function (e) {return self.handleEvent(e)});
         return self;
     }
     window.Turtle.Shell = TurtleShell;

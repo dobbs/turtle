@@ -5,10 +5,12 @@ describe("TurtleShell and TurtleShellLite", function () {
             className: "turtle-shell",
             value: '', 
             focus: function () {},
-            form: {addEventListener: function () {}}
+            form: {addEventListener: function () {}},
+            addEventListener: function () {}
         };
         spyOn(input.form, "addEventListener");
         spyOn(input, "focus");
+        spyOn(input, "addEventListener");
         event = {
             target: input,
             stopPropagation: function () {},
@@ -21,8 +23,9 @@ describe("TurtleShell and TurtleShellLite", function () {
         beforeEach(function () {
             shell = new Turtle.Shell(input);
         });
-        it("should add an event listener in the constructor", function () {
+        it("should add event listeners in the constructor", function () {
             expect(input.form.addEventListener).toHaveBeenCalled();
+            expect(input.addEventListener).toHaveBeenCalled();
         });
         it("disable regular event handling", function () {
             var result = shell.handleEvent(event);
@@ -51,8 +54,9 @@ describe("TurtleShell and TurtleShellLite", function () {
             scope = jasmine.createSpyObj("scope", ["methodA", "methodB", "methodC"]);
             shell = new Turtle.ShellLite(input, scope);
         });
-        it("should add an event listener in the constructor", function () {
+        it("should add event listeners in the constructor", function () {
             expect(input.form.addEventListener).toHaveBeenCalled();
+            expect(input.addEventListener).toHaveBeenCalled();
         });
         it("should split input.value & call scope[the first word]([the rest])", function () {
             input.value = 'methodA argument1   argument2';
@@ -62,7 +66,7 @@ describe("TurtleShell and TurtleShellLite", function () {
             expect(args[1]).toEqual("argument2");
         });
         it("should report errors to the console", function () {
-            spyOn(window.console, "log"); //.andCallThrough();
+            spyOn(window.console, "log"); //.andCallThrough(); //handy for debugging this spec
             input.value = 'force anError';
             shell.handleEvent(event);
             expect(window.console.log).toHaveBeenCalled();

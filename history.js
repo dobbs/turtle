@@ -91,8 +91,9 @@
         },
         load: function (revision) {
             this.input.value = this.storage.getItem(revision);
-            try {eval(this.input.value)}
-            catch(err) {console.log(err)}
+            var event = document.createEvent("HTMLEvents");
+            event.initEvent("change", true, true ); // event type,bubbling,cancelable
+            this.input.dispatchEvent(event);
             return;
         },
         remove: function (revision) {

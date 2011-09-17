@@ -73,8 +73,13 @@ describe("TurtleHistory", function () {
             it("includes a remove link", function () {
                 expect($revision.find("a.remove").get(0)).toBeTruthy();
             });
-            it("includes a rename link and a rename-form", function () {
+            it("includes a rename link", function () {
                 expect($revision.find("a.rename").get(0)).toBeTruthy();
+            });
+            it("includes a rename-form", function () {
+                var $form = $revision.find(".rename-form");
+                expect($form.get(0)).toBeTruthy();
+                expect($form.get(0).tagName).toEqual("FORM");
             });
         });
     });

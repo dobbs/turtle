@@ -103,8 +103,19 @@
 	    return this;
 	}
     });
-    function TurtleShapeDecorator(turtlepen, turtlerecorder) {
-	return extend(this, {turtle:turtlepen, shape:turtlerecorder});
+    function TurtleShapeDecorator(turtlepen) {
+        var cs = document.createElement('canvas');
+        cs.width = 15;
+        cs.height = 10;
+        var ctx = cs.getContext('2d');
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.lineTo(0,10);
+        ctx.lineTo(15,5);
+        ctx.lineTo(0,0);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#000000";
+	return extend(this, {turtle:turtlepen, shape:cs});
     }
     extend(TurtleShapeDecorator.prototype, {
 	home: function home(/* newhome */) {
@@ -134,8 +145,18 @@
 	    this._play_shape_relative_to_current_position();
 	    return this;
 	},
-	penup: function penup() {this.turtle.penup(); return this},
-	pendown: function pendown() {this.turtle.pendown(); return this},
+        penup: function penup() {
+            this._restore_background();
+            this.turtle.penup(); 
+            this._play_shape_relative_to_current_position();
+            return this;
+        },
+        pendown: function pendown() {
+            this._restore_background();
+            this.turtle.pendown();
+            this._play_shape_relative_to_current_position();
+            return this;
+        },
 	clear: function clear() {
 	    this.turtle.clear(); 
 	    this._play_shape_relative_to_current_position();
@@ -147,13 +168,13 @@
 	    var save_pen_state = this.turtle.pen;
 	    this._save_background();
 	    context.save();
+            var sx = this.shape.getContext('2d');
+            sx.fillStyle = save_pen_state == "up" ? "#ffffff": "#000000";
+            sx.fill();
+            sx.stroke();
 	    context.translate(position.x, position.y);
 	    context.rotate(radians(position.direction));
-	    this.turtle.penup();
-	    this.turtle.position({direction: 0, x: 0, y:0});
-	    this.turtle.pendown();
-	    this.shape.play(this.turtle);
-	    this.turtle.pen = save_pen_state;
+            context.drawImage(this.shape, this.shape.width/-2, this.shape.height/-2);
 	    context.restore();
 	    this.turtle.position(position);
 	},

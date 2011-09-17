@@ -4,7 +4,6 @@
         event.preventDefault();
         try {eval(this.input.value)}
         catch (err) {console.log(err)}
-        event.target.focus();
         return false;
     }
     function handleEventBySplit(event) {
@@ -16,7 +15,6 @@
         catch (err) {
             console.log("cannot call "+method+"() with ", args, "\n", err);
         }
-        event.target.focus();
         return false;
     }
     function TurtleShell(inputElement, scope){

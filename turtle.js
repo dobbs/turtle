@@ -95,8 +95,14 @@
 	},
 	pendown: function pendown() {
 	    this.pen = "down";
+            this.context.strokeStyle = this._pencolor;
 	    return this;
 	},
+        pencolor: function pencolor(color) {
+            this._pencolor = color;
+            this.context.strokeStyle = color;
+            return this;
+        },
 	clear: function clear() {
 	    this.context.clearRect(0,0,this.context.canvas.width, this.context.canvas.height);
 	    this.turtle.home();
@@ -157,6 +163,12 @@
             this._play_shape_relative_to_current_position();
             return this;
         },
+        pencolor: function pencolor(color) {
+            this._restore_background();
+            this.turtle.pencolor(color); 
+            this._play_shape_relative_to_current_position();
+            return this;
+        },
 	clear: function clear() {
 	    this.turtle.clear(); 
 	    this._play_shape_relative_to_current_position();
@@ -166,10 +178,11 @@
 	    var context = this.turtle.context;
 	    var position = this.turtle.position();
 	    var save_pen_state = this.turtle.pen;
+            var save_pen_color = context.strokeStyle;
 	    this._save_background();
 	    context.save();
             var sx = this.shape.getContext('2d');
-            sx.fillStyle = save_pen_state == "up" ? "#ffffff": "#000000";
+            sx.fillStyle = save_pen_state == "up" ? "#ffffff" : save_pen_color;
             sx.fill();
             sx.stroke();
 	    context.translate(position.x, position.y);
@@ -219,6 +232,10 @@
 	    this.queue.push(function penup(turtle) {turtle.penup(); return});
 	    return this;
 	},
+        pencolor: function pencolor(color) {
+            this.queue.push(function pencolor(turtle) {turtle.pencolor(color); return});
+            return this;
+        },
 	clear: function clear() {
 	    this.queue.push(function clear(turtle) {turtle.clear(); return});
 	    return this;

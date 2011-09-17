@@ -133,6 +133,11 @@ describe("TurtlePenDecorator", function () {
         expect(context.clearRect).toHaveBeenCalledWith(0,0,200,100);
         expect(turtle.position()).toEqual({direction:0, x:0, y:0});
     });
+    it("pencolor() sets context.strokeStyle", function () {
+        turtle.pencolor("DarkOrchid");
+        expect(turtle._pencolor).toEqual("DarkOrchid");
+        expect(context.strokeStyle).toEqual("DarkOrchid");
+    });
 });
 
 describe("TurtleShapeDecorator", function () {
@@ -212,9 +217,15 @@ describe("TurtleShapeDecorator", function () {
         expect(turtle.shape.getContext('2d').fillStyle).toEqual("#000000");
         expect(context.drawImage).toHaveBeenCalled();
         turtle.penup();
-        expect(turtle.shape.getContext('2d').fillStyle).toEqual("#ffffff");
         expect(context.drawImage).toHaveBeenCalled();
     });
+    it("should set the triangle's fillStyle to match the pen's color", function () {
+        turtle.pencolor("MediumSlateBlue").pendown();
+        var ctx = turtle.shape.getContext('2d');
+        expect(ctx.fillStyle).toEqual("#7b68ee");
+        turtle.pendown().pencolor("Navy");
+        expect(ctx.fillStyle).toEqual("#000080");
+    }); 
 });
 
 describe("TurtleCommandRecorder", function () {

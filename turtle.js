@@ -103,6 +103,10 @@
             this.context.strokeStyle = color;
             return this;
         },
+        pensize: function pensize(size) {
+            this.context.lineWidth = size;
+            return this;
+        },
 	clear: function clear() {
 	    this.context.clearRect(0,0,this.context.canvas.width, this.context.canvas.height);
 	    this.turtle.home();
@@ -166,6 +170,12 @@
         pencolor: function pencolor(color) {
             this._restore_background();
             this.turtle.pencolor(color); 
+            this._play_shape_relative_to_current_position();
+            return this;
+        },
+        pensize: function pensize(size) {
+            this._restore_background();
+            this.turtle.pensize(size); 
             this._play_shape_relative_to_current_position();
             return this;
         },
@@ -234,6 +244,10 @@
 	},
         pencolor: function pencolor(color) {
             this.queue.push(function pencolor(turtle) {turtle.pencolor(color); return});
+            return this;
+        },
+        pensize: function pensize(size) {
+            this.queue.push(function pensize(turtle) {turtle.pensize(color); return});
             return this;
         },
 	clear: function clear() {

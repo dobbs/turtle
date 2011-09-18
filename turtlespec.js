@@ -138,6 +138,10 @@ describe("TurtlePenDecorator", function () {
         expect(turtle._pencolor).toEqual("DarkOrchid");
         expect(context.strokeStyle).toEqual("DarkOrchid");
     });
+    it("pensize() sets context.lineWidth", function () {
+        turtle.pensize(3);
+        expect(context.lineWidth).toEqual(3);
+    });
 });
 
 describe("TurtleShapeDecorator", function () {

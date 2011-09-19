@@ -51,7 +51,7 @@ describe("TurtleShell and TurtleShellLite", function () {
     describe("TurtleShellLite.handleEvent", function () {
         var scope;
         beforeEach(function () {
-            scope = jasmine.createSpyObj("scope", ["methodA", "methodB", "methodC"]);
+            scope = jasmine.createSpyObj("scope", ["methoda", "methodA", "methodc"]);
             shell = new Turtle.ShellLite(input, scope);
         });
         it("should add event listeners in the constructor", function () {
@@ -61,9 +61,10 @@ describe("TurtleShell and TurtleShellLite", function () {
         it("should split input.value & call scope[the first word]([the rest])", function () {
             input.value = 'methodA argument1   argument2';
             shell.handleEvent(event);
-            var args = scope.methodA.mostRecentCall.args;
+            var args = scope.methoda.mostRecentCall.args;
             expect(args[0]).toEqual("argument1");
             expect(args[1]).toEqual("argument2");
+            expect(scope.methodA).not.toHaveBeenCalled();
         });
         it("should report errors to the console", function () {
             spyOn(window.console, "log"); //.andCallThrough(); //handy for debugging this spec

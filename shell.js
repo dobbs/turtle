@@ -10,7 +10,7 @@
         event.stopPropagation();
         event.preventDefault();
         var args = this.input.value.split(/ +/);
-        var method = args.shift();
+        var method = args.shift().toLowerCase();
         try {this.scope[method].apply(this.scope, args)}
         catch (err) {
             console.log("cannot call "+method+"() with ", args, "\n", err);

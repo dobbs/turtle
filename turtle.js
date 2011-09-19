@@ -81,8 +81,6 @@
 		this.context.moveTo(this.turtle.position().x, this.turtle.position().y);
 	    }
 	    else if (this.pen === "down") {
-		this.context.beginPath();
-		this.context.moveTo(this.turtle.position().x, this.turtle.position().y);
 		this.turtle.move(pixels);
 		this.context.lineTo(this.turtle.position().x, this.turtle.position().y);
 		this.context.stroke();
@@ -95,6 +93,8 @@
 	},
 	pendown: function pendown() {
 	    this.pen = "down";
+            this.context.beginPath();
+            this.context.moveTo(this.turtle.position().x, this.turtle.position().y);
             this.context.strokeStyle = this._pencolor;
 	    return this;
 	},
@@ -112,6 +112,30 @@
 	    this.turtle.home();
 	    return this;
 	}
+    });
+    function TurtleLineDecorator (turtle, context) {
+	return extend(this, {"turtle":turtle, "context":context, "pen": "up"});
+    }
+    TurtleLineDecorator.prototype = extend(TurtlePenDecorator.prototype, {
+        move: function move(pixels) {
+	    if (this.pen === "up") {
+		this.turtle.move(pixels);
+		this.context.moveTo(this.turtle.position().x, this.turtle.position().y);
+	    }
+	    else if (this.pen === "down") {
+		this.context.beginPath();
+		this.context.moveTo(this.turtle.position().x, this.turtle.position().y);
+		this.turtle.move(pixels);
+		this.context.lineTo(this.turtle.position().x, this.turtle.position().y);
+		this.context.stroke();
+	    }
+	    return this;
+        },
+	pendown: function pendown() {
+	    this.pen = "down";
+            this.context.strokeStyle = this._pencolor;
+	    return this;
+	},
     });
     function TurtleShapeDecorator(turtlepen) {
         var cs = document.createElement('canvas');
@@ -279,6 +303,7 @@
 	extend: extend,
 	Recorder: TurtleCommandRecorder,
 	Pen: TurtlePenDecorator,
+        Line: TurtleLineDecorator,
 	Shape: TurtleShapeDecorator
     });
 })(this, this.document);

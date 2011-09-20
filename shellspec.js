@@ -61,6 +61,7 @@ describe("TurtleShell and TurtleShellLite", function () {
         it("should split input.value & call scope[the first word]([the rest])", function () {
             input.value = 'methodA argument1   argument2';
             shell.handleEvent(event);
+            expect(scope.methoda).toHaveBeenCalled();
             var args = scope.methoda.mostRecentCall.args;
             expect(args[0]).toEqual("argument1");
             expect(args[1]).toEqual("argument2");
@@ -75,6 +76,16 @@ describe("TurtleShell and TurtleShellLite", function () {
             var err = args.pop(), msg = args.shift();
             expect(msg).toMatch(/cannot call force\(\) with/);
             expect(err.name).toEqual("TypeError");
+        });
+        it("should recognize multiple commands delimited by period (.)", function () {
+            input.value = "methodA argument1  argument2. methodc argument3.";
+            shell.handleEvent(event);
+            expect(scope.methoda).toHaveBeenCalled();
+            var args = scope.methoda.mostRecentCall.args;
+            expect(args[0]).toEqual("argument1");
+            expect(args[1]).toEqual("argument2");
+            expect(scope.methodc).toHaveBeenCalled();
+            expect(scope.methodc.mostRecentCall.args[0]).toEqual("argument3");
         });
     });
 });

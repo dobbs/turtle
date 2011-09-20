@@ -9,11 +9,17 @@
     function handleEventBySplit(event) {
         event.stopPropagation();
         event.preventDefault();
-        var args = this.input.value.split(/ +/);
-        var method = args.shift().toLowerCase();
-        try {this.scope[method].apply(this.scope, args)}
-        catch (err) {
-            console.log("cannot call "+method+"() with ", args, "\n", err);
+        var cmds = this.input.value.split(/ *\. */);
+        for (var i = 0; i < cmds.length; i++) {
+            var cmd = cmds[i];
+            var args = cmd.split(/ +/);
+            var method = args.shift().toLowerCase();
+            if (!method)
+                continue;
+            try {this.scope[method].apply(this.scope, args)}
+            catch (err) {
+                console.log("cannot call "+method+"() with ", args, "\n", err);
+            }
         }
         return false;
     }

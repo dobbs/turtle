@@ -33,12 +33,19 @@ canvas {border: 1pt solid black;}
 <a href="" id="commandline-history-show">&#x25BA; History</a><section id="commandline-history" class="turtle-hide"></section>
 </div>
 <div class="interactive-docs">
-<p>Commands include:</p>
-<p><code>penup</code></p>
-<p><code>pendown</code></p>
-<p><code>move <em>pixels</em></code></p>
-<p><code>turn <em>degrees</em></code></p>
-<p><code>clear</code></p>
+<p><a href="" class="turtle-command" data-turtle-command="penup">penup</a></p>
+<p><a href="" class="turtle-command" data-turtle-command="pendown">pendown</a></p>
+<p><a href="" class="turtle-command" data-turtle-command="move 10">move <em>10 pixels</em></a></p>
+<p><a href="" class="turtle-command" data-turtle-command="turn 15">turn <em>15 degrees</em></a></p>
+<p><a href="" class="turtle-command" data-turtle-command="turn -15">turn <em>-15 degrees</em></a></p>
+<p><a href="" class="turtle-command" data-turtle-command="clear">clear</a></p>
+<p><a href="" class="turtle-command" data-turtle-command="home">home</a></p>  
+<p><a href="" class="turtle-command" data-turtle-command="pencolor black">pencolor <em>black</em></a></p>  
+<p><a href="" class="turtle-command" data-turtle-command="pencolor MediumSlateBlue">pencolor <em>MediumSlateBlue</em></a></p>  
+<p><a href="" class="turtle-command" data-turtle-command="pensize 1">pensize <em>1 pixel</em></a></p>  
+<p><a href="" class="turtle-command" data-turtle-command="pensize 3">pensize <em>3 pixels</em></a></p>  
+<p><a href="" class="turtle-command" data-turtle-command="pensize 3. pencolor Aqua">pensize 3. pencolor Aqua</a></p>  
+<p><a href="" class="turtle-command" data-turtle-command="move 60. turn -144">move 60. turn -144</a></p>  
 </div>  
 <form>
 <textarea id="editor" cols="60" rows="40">
@@ -90,6 +97,21 @@ window.commandline_history = new Turtle.History(commandline, window.localStorage
     useInputValueForRevisionName: true
 });
 window.commandline_history.syncLocalStorage();
+
+var commands = document.getElementsByClassName('turtle-command');
+for (var i = 0; i < commands.length; i++) {
+    var link = commands.item(i);
+    link.addEventListener('click', function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+        var cmd = event.target.getAttribute('data-turtle-command');
+        commandline.value = cmd;
+        var event = document.createEvent("HTMLEvents");
+        event.initEvent("change", true, true ); // event type,bubbling,cancelable
+        commandline.dispatchEvent(event);
+        return false;
+    });
+};
 
 document.getElementById("commandline-history-show").addEventListener("click", function (event) {
     event.stopPropagation();

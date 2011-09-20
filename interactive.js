@@ -10,5 +10,5 @@
 	Turtle.interactiveTurtle = turtle;
 	return;
     }
-    Turtle.interactiveCanvas = interactiveCanvas;
+    window.Turtle.interactiveCanvas = interactiveCanvas;
 })(this, this.document);

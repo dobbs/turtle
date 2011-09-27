@@ -18,7 +18,10 @@ detail here:
 
 My main motivation for developing this library is to enable others to
 repeat those exercises in a web browser, especially on a mobile phone
-or tablet computer.  It's not quite there (as of January 2011), but
-getting closer.
+or tablet computer.  
+
+As of September 2011 I've got most of the tools I was hoping to build
+including a kind of command history and versioning, an interactive
+shell and some animation.  See the live demo at http://dobbs.github.com.
 
 -Eric

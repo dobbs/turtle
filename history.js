@@ -42,7 +42,7 @@
             var self = this;
             self.element.innerHTML = "";
             var keys = self.storage.keys();
-            keys.map(function(key) {self.createWithoutSave(key)});
+            keys.map(function(key) {self.createWithoutSave(key);});
             return;
         },
         createWithoutSave: function createWithoutSave(name) {

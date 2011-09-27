@@ -8,7 +8,7 @@
             var limit = this.storage.length, found = [];
             for(var i = 0; i < limit; i++) {
                 var key = this.storage.key(i);
-                if (key && key.indexOf(this.prefix) == 0) {
+                if (key && key.indexOf(this.prefix) === 0) {
                     found.push(key.replace(this.prefix+".", ""));
                 }
             }

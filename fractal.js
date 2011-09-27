@@ -26,7 +26,7 @@
 	return;
     }
     function von_koch (pixels, depth) {
-        for (var i=3; i--;) {
+        for (var i=3; i > 0; i--) {
             fractalLine(pixels, depth, [0, 60, -120, 60]);
             recorder.turn(-120);
         }
@@ -46,6 +46,6 @@
 	peano(90, 3);
 	recorder.play(new Turtle.Line(new Turtle(), canvas.getContext('2d')), 5, 1);
 	return;
-    };
+    }
     Turtle.drawFractal = drawFractal;
 })(this, this.document);

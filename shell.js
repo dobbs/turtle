@@ -9,16 +9,25 @@
     function handleEventBySplit(event) {
         event.stopPropagation();
         event.preventDefault();
-        var cmds = this.input.value.split(/ *\. */);
-        for (var i = 0; i < cmds.length; i++) {
-            var cmd = cmds[i];
-            var args = cmd.split(/ +/);
-            var method = args.shift().toLowerCase();
-            if (!method)
-                continue;
-            try {this.scope[method].apply(this.scope, args)}
-            catch (err) {
-                console.log("cannot call "+method+"() with ", args, "\n", err);
+        var raw = this.input.value;
+        var has_repeat = raw.match(/(\d+)x:/);
+        var count = 1;
+        if (has_repeat) {
+            count = has_repeat[1];
+            raw = raw.replace(/\d+x: */, '');
+        }
+        var cmds = raw.split(/ *\. */);
+        for (var j = 0; j < count; j++) {
+            for (var i = 0; i < cmds.length; i++) {
+                var cmd = cmds[i];
+                var args = cmd.split(/ +/);
+                var method = args.shift().toLowerCase();
+                if (!method)
+                    continue;
+                try {this.scope[method].apply(this.scope, args)}
+                catch (err) {
+                    console.log("cannot call "+method+"() with ", args, "\n", err);
+                }
             }
         }
         return false;

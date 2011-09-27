@@ -87,5 +87,11 @@ describe("TurtleShell and TurtleShellLite", function () {
             expect(scope.methodc).toHaveBeenCalled();
             expect(scope.methodc.mostRecentCall.args[0]).toEqual("argument3");
         });
+        it("should repeat a command N times if it's prefixed with Nx:", function () {
+            input.value = "3x: methodA argument3 argument2. methodc argument1";
+            shell.handleEvent(event);
+            expect(scope.methoda.callCount).toEqual(3);
+            expect(scope.methodc.callCount).toEqual(3);
+        });
     });
 });

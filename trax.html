@@ -1,0 +1,169 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html><head>
+<title>Turtle Trax</title>
+<script type="text/javascript" src="turtle.min.js"></script> 
+<script type="text/javascript" src="lib/jquery-1.6.1.min.js"></script>
+<script type="text/javascript">
+(function(window, document, undefined) {
+$(function(){
+
+function drawControls() {
+  function arrow(turtle) {
+    turtle.pensize(2).turn(-90).move(5).turn(120).move(10).turn(120).move(10).turn(120).move(5);
+  }
+  var left = new Turtle.Pen(
+    new Turtle({x: 25, y: 25, direction: -90}),
+    $('.turtle-turn-left').get(0).getContext('2d')
+  );
+  left.clear().pendown().pensize(3);
+  for (var i = 0; i < 10; i++) {left.move(2).turn(-9);}
+  left.move(2);
+  arrow(left);
+  
+  var right = new Turtle.Pen(
+    new Turtle({x: 5, y: 25, direction: -90}),
+    $('.turtle-turn-right').get(0).getContext('2d')
+  );
+  right.clear().pendown().pensize(3);
+  for (var i = 0; i < 10; i++) {right.move(2).turn(9);}
+  right.move(2);
+  arrow(right);
+  
+  var forward = new Turtle.Pen(
+    new Turtle({x: 16, y: 28, direction: -90}),
+    $('.turtle-move-forward').get(0).getContext('2d')
+  );
+  forward.clear().pendown().pensize(3).move(15);
+  arrow(forward);
+}
+
+drawControls();
+
+var context = $('.tracks .turtle').get(0).getContext('2d');
+var tracks = new Turtle.Shape(
+  new Turtle.Line(
+    new Turtle({
+      x: Math.floor(context.canvas.width/2), 
+      y: Math.floor(context.canvas.height/2),
+      direction: -90}),
+  context)).clear().pendown();
+tracks.turnsize = 15;
+tracks.stepsize = 10;
+tracks.pens = [0, 1, 3, 5, 9];
+tracks.currentpen = 1;
+tracks.colors = [
+  "white",
+  "black",
+  "red",
+  "orange",
+  "yellow",
+  "green",
+  "blue",
+  "indigo",
+  "darkviolet"
+];
+tracks.currentcolor = 1;
+function renderPensizeControl(size) {
+  var canvas = $('.controls .turtle-pensize').get(0);
+  var context = canvas.getContext('2d');
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  if (size) {
+    context.beginPath();
+    context.arc(canvas.width/2, canvas.height/2, size, 0, 2*Math.PI);
+    context.fill();
+  }
+}
+function renderPencolorControl(color) {
+  var canvas = $('.controls .turtle-pencolor').get(0);
+  var context = canvas.getContext('2d');
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.rect(0, 0, canvas.width, canvas.height);
+  context.fillStyle = color;
+  context.fill();
+}
+function renderTurnsizeControl(size) {
+  var canvas = $('.controls .turtle-turnsize').get(0);
+  var context = canvas.getContext('2d');
+  context.translate(canvas.width/2, canvas.height/2);
+  context.rotate(-Math.PI/2);
+  context.beginPath();
+  context.moveTo(0, 0);
+  context.arc(0, 0, canvas.width/2.3, 0, size*Math.PI/180);
+  context.fill();
+}
+renderTurnsizeControl(tracks.turnsize);
+renderPensizeControl(1);
+renderPencolorControl("black");
+
+
+
+$('.link-turtle-turn-left').click(function (e) {
+  e.preventDefault();
+  tracks.turn(tracks.turnsize * -1);
+});
+$('.link-turtle-turn-right').click(function (e) {
+  e.preventDefault();
+  tracks.turn(tracks.turnsize);
+});
+$('.link-turtle-move-forward').click(function (e) {
+  e.preventDefault();
+  tracks.move(tracks.stepsize);
+});
+$('.link-turtle-pensize').click(function(e) {
+  e.preventDefault();
+  if (tracks.currentpen + 1 < tracks.pens.length) {
+    tracks.currentpen = tracks.currentpen + 1;
+    if (tracks.turtle.pen == "up") {tracks.pendown();}
+  }
+  else {
+    tracks.currentpen = 0;
+    tracks.penup();
+  }
+  var size = tracks.pens[tracks.currentpen];
+  tracks.pensize(size);
+  renderPensizeControl(size);
+});
+$('.link-turtle-pencolor').click(function(e){
+  e.preventDefault();
+  if (tracks.currentcolor + 1 < tracks.colors.length) {
+    tracks.currentcolor = tracks.currentcolor + 1;
+  }
+  else {
+    tracks.currentcolor = 0;
+  }
+  var color = tracks.colors[tracks.currentcolor];
+  tracks.pencolor(color);
+  renderPencolorControl(color);
+});
+
+window.T = tracks;
+});
+})(this, this.document);
+</script>
+<style type="text/css">
+.tracks {
+  margin-bottom: 5px;
+}
+.tracks canvas {
+  border: 1px solid black;
+}
+.controls canvas {
+  border: 1px solid black;
+  margin-right: 5px;
+}
+</style
+</head>
+<body>
+
+<div class="tracks"><canvas width="300" height="300" class="turtle"></canvas></div>
+<div class="controls">
+  <a href="" class="link-turtle-turn-left"><canvas width="32" height="32" class="turtle-turn-left"></canvas></a>
+  <a href="" class="link-turtle-move-forward"><canvas width="32" height="32" class="turtle-move-forward"></canvas></a>
+  <a href="" class="link-turtle-turn-right"><canvas width="32" height="32" class="turtle-turn-right"></canvas></a>
+  <a href="" class="link-turtle-pensize"><canvas width="32" height="32" class="turtle-pensize"></canvas></a>
+  <a href="" class="link-turtle-pencolor"><canvas width="32" height="32" class="turtle-pencolor"></canvas></a>
+  <a href="" class="link-turtle-turnsize"><canvas width="32" height="32" class="turtle-turnsize"></canvas></a>
+  <a href="" class="link-turtle-stepsize"><canvas width="32" height="32" class="turtle-stepsize"></canvas></a>
+</div>
+  
+</body></html>

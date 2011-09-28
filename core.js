@@ -59,6 +59,7 @@
 	}
     });
     function TurtlePenDecorator (turtle, context) {
+        context.lineCap = "round";
 	return extend(this, {"turtle":turtle, "context":context, "pen": "up"});
     }
     extend(TurtlePenDecorator.prototype, {
@@ -114,6 +115,7 @@
 	}
     });
     function TurtleLineDecorator (turtle, context) {
+        context.lineCap = "round";
 	return extend(this, {"turtle":turtle, "context":context, "pen": "up"});
     }
     TurtleLineDecorator.prototype = extend(TurtlePenDecorator.prototype, {

@@ -6,8 +6,8 @@
 	return true;
     }
     function radians (degrees) {return degrees * Math.PI / 180;}
-    function degrees (radians) {return radians * 180 / Math.PI;}
-    function Turtle(/*degrees, [x, y]*/) {
+    function degrees (radians) {return Math.round(radians * 180 / Math.PI);}
+    function Turtle(/*radians, [x, y]*/) {
 	var home = {direction: 0, x: 0, y: 0};
 	if (arguments.length == 1) {
 	    extend(home, arguments[0]);
@@ -29,8 +29,12 @@
 	    if (typeof newposition === "object") {
 		var errors = [];
 		if (assertNumber(newposition.direction, errors, "direction must be a number")) {
-		    this._position.direction = parseFloat(newposition.direction) % 360;
-		    (this._position.direction < 0) && (this._position.direction += 360);
+                    var newdirection = parseFloat(newposition.direction);
+                    while (newdirection > 2*Math.PI)
+                        newdirection -= 2*Math.PI;
+                    while (newdirection < 0)
+                        newdirection += 2*Math.PI
+		    this._position.direction = newdirection;
 		}
 		if (assertNumber(newposition.x, errors, "x must be a number")) {
 		    this._position.x = parseFloat(newposition.x);
@@ -45,15 +49,15 @@
 	    }
 	    return extend({}, this._position);
 	},
-	turn: function turn (degrees) {
-	    this.position({direction:this._position.direction + parseFloat(degrees)});
+	turn: function turn (angle) {
+	    this.position({direction:this._position.direction + parseFloat(angle)});
 	    return this;
 	},
 	move: function move (pixels) {
 	    var p = parseFloat(pixels);
 	    this.position({
-		x: Math.cos(radians(this._position.direction)) * p + this._position.x,
-		y: Math.sin(radians(this._position.direction)) * p + this._position.y
+		x: Math.cos(this._position.direction) * p + this._position.x,
+		y: Math.sin(this._position.direction) * p + this._position.y
 	    });
 	    return this;
 	}
@@ -72,8 +76,8 @@
 	    if (arguments.length === 0) {return this.turtle.position();}
 	    else if (arguments.length === 1) {return this.turtle.position(arguments[0]);}
 	},
-	turn: function turn(degrees) {
-	    this.turtle.turn(degrees);
+	turn: function turn(angle) {
+	    this.turtle.turn(angle);
 	    return this;
 	},
 	move: function move(pixels) {
@@ -169,9 +173,9 @@
 	    }
 	    return this.turtle.position();
 	},
-	turn: function turn(degrees) {
+	turn: function turn(angle) {
 	    this._restore_background();
-	    this.turtle.turn(degrees); 
+	    this.turtle.turn(angle); 
 	    this._play_shape_relative_to_current_position();
 	    return this;
 	},
@@ -222,7 +226,7 @@
             sx.fill();
             sx.stroke();
 	    context.translate(position.x, position.y);
-	    context.rotate(radians(position.direction));
+	    context.rotate(position.direction);
             context.drawImage(this.shape, this.shape.width/-2, this.shape.height/-2);
 	    context.restore();
 	    this.turtle.position(position);
@@ -252,8 +256,8 @@
 	    this.queue.push(function position(turtle) {turtle.position(newposition); return;});
 	    return this;
 	},
-	turn: function turn(degrees) {
-	    this.queue.push(function turn(turtle) {turtle.turn(degrees); return;});
+	turn: function turn(angle) {
+	    this.queue.push(function turn(turtle) {turtle.turn(angle); return;});
 	    return this;
 	},
 	move: function move(pixels) {
@@ -300,6 +304,8 @@
     });
     window.Turtle = Turtle;
     extend(window.Turtle, {
+        degrees: degrees,
+        radians: radians,
 	extend: extend,
 	Recorder: TurtleCommandRecorder,
 	Pen: TurtlePenDecorator,

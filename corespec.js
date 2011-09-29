@@ -10,27 +10,27 @@ describe("Turtle", function () {
         });
 
         it("should use given direction and position as defaults", function () {
-            turtle = new Turtle({direction:60, x:50, y:40});
-            expect(turtle.position()).toEqual({direction:60, x:50, y:40});
+            turtle = new Turtle({direction:Turtle.radians(60), x:50, y:40});
+            expect(turtle.position()).toEqual({direction:Turtle.radians(60), x:50, y:40});
         });
     });
 
     describe("position({direction:degrees})", function () {
         it("should change turtle.position().direction", function () {
-            turtle.position({direction:30});
-            expect(turtle.position().direction).toEqual(30);
+            turtle.position({direction:Turtle.radians(30)});
+            expect(Turtle.degrees(turtle.position().direction)).toEqual(30);
         });
 
         it("should convert directions greater than 360 degrees", function () {
-            turtle.position({direction:400});
-            expect(turtle.position().direction).toEqual(40);
+            turtle.position({direction:Turtle.radians(400)});
+            expect(Turtle.degrees(turtle.position().direction)).toEqual(40);
         });
 
         it("should convert negative degrees", function () {
-            turtle.position({direction:-30});
-            expect(turtle.position().direction).toEqual(330);
-            turtle.position({direction:-400});
-            expect(turtle.position().direction).toEqual(320);
+            turtle.position({direction:Turtle.radians(-30)});
+            expect(Turtle.degrees(turtle.position().direction)).toEqual(330);
+            turtle.position({direction:Turtle.radians(-400)});
+            expect(Turtle.degrees(turtle.position().direction)).toEqual(320);
         });
     });
 
@@ -45,7 +45,7 @@ describe("Turtle", function () {
         function random(i, j) {return Math.floor(Math.random()*(j-i+1))+i}
         it("should reset direction and position to defaults", function () {
             turtle.position({
-                direction:random(0, 360),
+                direction:random(0, 2*Math.PI),
                 x:random(-100, 100),
                 y:random(-100, 100)
             });
@@ -54,37 +54,37 @@ describe("Turtle", function () {
         });
 
         it("should reset direction and position to user specified defaults", function () {
-            turtle = new Turtle({direction:90, x:80, y:70});
+            turtle = new Turtle({direction:Turtle.radians(90), x:80, y:70});
             turtle.position({
-                direction:random(0, 360),
+                direction:random(0, 2*Math.PI),
                 x:random(-100, 100),
                 y:random(-100, 100)
             });
             turtle.home();
-            expect(turtle.position()).toEqual({direction:90, x:80, y:70});
+            expect(turtle.position()).toEqual({direction:Turtle.radians(90), x:80, y:70});
         });
 
         it("should also change the turtle's home when given arguments", function () {
-            turtle.home({direction:15, x:25, y:35});
-            expect(turtle.position()).toEqual({direction:15, x:25, y:35});
+            turtle.home({direction:Turtle.radians(15), x:25, y:35});
+            expect(turtle.position()).toEqual({direction:Turtle.radians(15), x:25, y:35});
             turtle.position({
-                direction:random(0, 360),
+                direction:random(0, 2*Math.PI),
                 x:random(-100, 100),
                 y:random(-100, 100)
             });
             turtle.home();
-            expect(turtle.position()).toEqual({direction:15, x:25, y:35});
+            expect(turtle.position()).toEqual({direction:Turtle.radians(15), x:25, y:35});
         });
     });
 
     describe("turn(degrees)", function () {
         it("should change turtle.position().direction relative to its current direction", function () {
-            turtle.turn(30);
-            expect(turtle.position().direction).toEqual(30);
-            turtle.turn(-45);
-            expect(turtle.position().direction).toEqual(345);
-            turtle.turn(90);
-            expect(turtle.position().direction).toEqual(75);
+            turtle.turn(Turtle.radians(30));
+            expect(Turtle.degrees(turtle.position().direction)).toEqual(30);
+            turtle.turn(Turtle.radians(-45));
+            expect(Turtle.degrees(turtle.position().direction)).toEqual(345);
+            turtle.turn(Turtle.radians(90));
+            expect(Turtle.degrees(turtle.position().direction)).toEqual(75);
         });
     });
 
@@ -95,7 +95,7 @@ describe("Turtle", function () {
                     return Math.round(this.actual) === expected;
                 },
             });
-            var smallest_angle_of_3_4_5_right_triangle = 37;
+            var smallest_angle_of_3_4_5_right_triangle = Turtle.radians(37);
             turtle.position({direction:smallest_angle_of_3_4_5_right_triangle});
             turtle.move(50);
             expect(turtle.position().x).toRoundTo(40);
@@ -129,7 +129,7 @@ describe("TurtlePenDecorator", function () {
     });
     it("clear() calls context.clearRect() and turtle.home()", function () {
         context.canvas = {width: 200, height: 100};
-        turtle.turn(30).move(40).clear();
+        turtle.turn(Turtle.radians(30)).move(40).clear();
         expect(context.clearRect).toHaveBeenCalledWith(0,0,200,100);
         expect(turtle.position()).toEqual({direction:0, x:0, y:0});
     });
@@ -166,7 +166,7 @@ describe("TurtleShapeDecorator", function () {
         turtle = new Turtle.Shape(pen);
     });
     it("should draw the triangle after home()", function () {
-        turtle.home({direction: 60, x:50, y:40});
+        turtle.home({direction: Turtle.radians(60), x:50, y:40});
         expect(context.save).toHaveBeenCalled();
         expect(context.translate).toHaveBeenCalledWith(50, 40);
         expect(context.rotate).toHaveBeenCalledWith(Math.PI/3);
@@ -175,7 +175,7 @@ describe("TurtleShapeDecorator", function () {
         expect(context.restore).toHaveBeenCalled();
     });
     it("should draw the triangle after changing the position()", function () {
-        turtle.position({direction: 90, x:80, y:70});
+        turtle.position({direction: Turtle.radians(90), x:80, y:70});
         expect(context.save).toHaveBeenCalled();
         expect(context.translate).toHaveBeenCalledWith(80, 70);
         expect(context.rotate).toHaveBeenCalledWith(Math.PI/2);
@@ -184,7 +184,7 @@ describe("TurtleShapeDecorator", function () {
         expect(context.restore).toHaveBeenCalled();
     });
     it("should draw the triangle after turn()", function () {
-        turtle.turn(30);
+        turtle.turn(Turtle.radians(30));
         expect(context.save).toHaveBeenCalled();
         expect(context.translate).toHaveBeenCalledWith(0, 0);
         expect(context.rotate).toHaveBeenCalledWith(Math.PI/6);
@@ -212,7 +212,7 @@ describe("TurtleShapeDecorator", function () {
         expect(context.restore).toHaveBeenCalled();
     });
     it("should save and restore the background", function () {
-        turtle.move(90).turn(90);
+        turtle.move(90).turn(Turtle.radians(90));
         expect(context.getImageData).toHaveBeenCalled();
         expect(context.putImageData).toHaveBeenCalled();
     });
@@ -241,14 +241,14 @@ describe("TurtleCommandRecorder", function () {
         recorder = new Turtle.Recorder();
     });
     it("should record the core turtle commands: home, position, turn, and move", function () {
-        recorder.home().position({x: 10, y:20, direction:30}).turn(40).move(50);
+        recorder.home().position({x: 10, y:20, direction:Turtle.radians(30)}).turn(Turtle.radians(40)).move(50);
         expect(recorder.queue.length).toEqual(4);
         recorder.queue[0].apply(undefined, [turtle]);
         expect(turtle.home).toHaveBeenCalled();
         recorder.queue[1].apply(undefined, [turtle]);
-        expect(turtle.position).toHaveBeenCalledWith({x: 10, y: 20, direction: 30});
+        expect(turtle.position).toHaveBeenCalledWith({x: 10, y: 20, direction: Turtle.radians(30)});
         recorder.queue[2].apply(undefined, [turtle]);
-        expect(turtle.turn).toHaveBeenCalledWith(40);
+        expect(turtle.turn).toHaveBeenCalledWith(Turtle.radians(40));
         recorder.queue[3].apply(undefined, [turtle]);
         expect(turtle.move).toHaveBeenCalledWith(50);
     });
@@ -261,17 +261,17 @@ describe("TurtleCommandRecorder", function () {
         expect(turtle.penup).toHaveBeenCalled();
     });
     it("should be able to play() back all recorded commands", function () {
-        recorder.home().position({x: 10, y:20, direction:30}).turn(40).move(50).pendown().penup();
+        recorder.home().position({x: 10, y:20, direction:Turtle.radians(30)}).turn(Turtle.radians(40)).move(50).pendown().penup();
         recorder.play(turtle);
         expect(turtle.home).toHaveBeenCalled();
-        expect(turtle.position).toHaveBeenCalledWith({x: 10, y: 20, direction: 30});
-        expect(turtle.turn).toHaveBeenCalledWith(40);
+        expect(turtle.position).toHaveBeenCalledWith({x: 10, y: 20, direction: Turtle.radians(30)});
+        expect(turtle.turn).toHaveBeenCalledWith(Turtle.radians(40));
         expect(turtle.move).toHaveBeenCalledWith(50);
         expect(turtle.pendown).toHaveBeenCalled();
         expect(turtle.penup).toHaveBeenCalled();
     });
     it("should be able to play() back all recorded commands animated", function () {
-        recorder.home().position({x: 10, y:20, direction:30}).turn(40).move(50).pendown().penup();
+        recorder.home().position({x: 10, y:20, direction:Turtle.radians(30)}).turn(Turtle.radians(40)).move(50).pendown().penup();
         runs(function () {
             recorder.play(turtle, 50);
             expect(turtle.home).toHaveBeenCalled();
@@ -284,7 +284,7 @@ describe("TurtleCommandRecorder", function () {
         });
         waits(60);
         runs(function () {
-            expect(turtle.turn).toHaveBeenCalledWith(40);
+            expect(turtle.turn).toHaveBeenCalledWith(Turtle.radians(40));
             expect(turtle.move).not.toHaveBeenCalled();
         });
         waits(60);
@@ -305,43 +305,43 @@ describe("TurtleCommandRecorder", function () {
     it("should be able to animate recorded commands in chunks", function () {
         runs(function () {
             recorder.turn(0).move(5);
-            recorder.turn(10).move(15);
-            recorder.turn(20).move(25);
-            recorder.turn(30).move(35);
-            recorder.turn(40).move(45);
-            recorder.turn(50).move(55);
-            recorder.turn(60).move(65);
+            recorder.turn(Turtle.radians(10)).move(15);
+            recorder.turn(Turtle.radians(20)).move(25);
+            recorder.turn(Turtle.radians(30)).move(35);
+            recorder.turn(Turtle.radians(40)).move(45);
+            recorder.turn(Turtle.radians(50)).move(55);
+            recorder.turn(Turtle.radians(60)).move(65);
             recorder.play(turtle, 50, 4);
         });
         waits(51);
         runs(function () {
             expect(turtle.turn).toHaveBeenCalledWith(0);
             expect(turtle.move).toHaveBeenCalledWith(5);
-            expect(turtle.turn).toHaveBeenCalledWith(10);
+            expect(turtle.turn).toHaveBeenCalledWith(Turtle.radians(10));
             expect(turtle.move).toHaveBeenCalledWith(15);
-            expect(turtle.turn).not.toHaveBeenCalledWith(30);
+            expect(turtle.turn).not.toHaveBeenCalledWith(Turtle.radians(30));
         });
         waits(51);
         runs(function () {
-            expect(turtle.turn).toHaveBeenCalledWith(20);
+            expect(turtle.turn).toHaveBeenCalledWith(Turtle.radians(20));
             expect(turtle.move).toHaveBeenCalledWith(25);
-            expect(turtle.turn).toHaveBeenCalledWith(30);
+            expect(turtle.turn).toHaveBeenCalledWith(Turtle.radians(30));
             expect(turtle.move).toHaveBeenCalledWith(35);
-            expect(turtle.turn).not.toHaveBeenCalledWith(50);
+            expect(turtle.turn).not.toHaveBeenCalledWith(Turtle.radians(50));
         });
         waits(51);
         runs(function () {
-            expect(turtle.turn).toHaveBeenCalledWith(40);
+            expect(turtle.turn).toHaveBeenCalledWith(Turtle.radians(40));
             expect(turtle.move).toHaveBeenCalledWith(45);
-            expect(turtle.turn).toHaveBeenCalledWith(50);
+            expect(turtle.turn).toHaveBeenCalledWith(Turtle.radians(50));
             expect(turtle.move).toHaveBeenCalledWith(55);
-            expect(turtle.turn).not.toHaveBeenCalledWith(70);
+            expect(turtle.turn).not.toHaveBeenCalledWith(Turtle.radians(70));
         });
         waits(120);
         runs(function () {
-            expect(turtle.turn).toHaveBeenCalledWith(60);
+            expect(turtle.turn).toHaveBeenCalledWith(Turtle.radians(60));
             expect(turtle.move).toHaveBeenCalledWith(65);
-            expect(turtle.turn).not.toHaveBeenCalledWith(70);
+            expect(turtle.turn).not.toHaveBeenCalledWith(Turtle.radians(70));
         });
     });
 });

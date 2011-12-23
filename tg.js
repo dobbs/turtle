@@ -135,6 +135,7 @@ var tg = tg || {};
                         that.move(10).turn(5);
                     that.turn(120 + 72);
                 }
+                that.pensize(1).pencolor('blue').penup().turn(-90).move(150).turn(90).pendown();
             }
 
         });
@@ -227,7 +228,7 @@ var tg = tg || {};
 
         tg.T = init(Turtle.interactiveTurtle);
         
-        tg.T.flowerAndStem();
+        setTimeout(tg.T.flowerAndStem, 200);
     });
 
 

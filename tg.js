@@ -110,6 +110,31 @@ var tg = tg || {};
                 for (var j = 1; j <= max; j++)
                     that.move(side*j).turn(corners.indexOf(j) < 0 ? -angle : angle);
                 return that;
+            },
+
+            flowerAndStem: function flowerAndStem() {
+                that.home().pensize(8).pencolor('green').turn(50);
+                for(var i=0; i<6; i++)
+                    that.move(20).turn(10);
+                that.turn(-160);
+                for(var i=0; i<6; i++)
+                    that.move(10).turn(10);
+                that.turn(120);
+                for(var i=0; i<6; i++)
+                    that.move(10).turn(10);
+                that.turn(-100);
+
+                for(var i=0; i<6; i++)
+                    that.move(20).turn(-10);
+                that.home().pensize(12).pencolor('red');
+                for(var j=0; j<5; j++) {
+                    for(var i=0; i<12; i++)
+                        that.move(10).turn(5);
+                    that.turn(120);
+                    for(var i=0; i<12; i++)
+                        that.move(10).turn(5);
+                    that.turn(120 + 72);
+                }
             }
 
         });
@@ -202,6 +227,7 @@ var tg = tg || {};
 
         tg.T = init(Turtle.interactiveTurtle);
         
+        tg.T.flowerAndStem();
     });
 
 

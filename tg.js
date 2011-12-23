@@ -202,13 +202,6 @@ var tg = tg || {};
 
         tg.T = init(Turtle.interactiveTurtle);
         
-        setTimeout(function flowerAndStem () {
-            tg.T.pensize(6).pencolor('green').turn(45).arc(100, 60).arc(100, 60, 'ccw');
-            tg.T.home().pensize(12).pencolor('red');
-            for(var i=0; i<5; i++)
-                tg.T.arc(80, 60).turn(120).arc(80, 60).turn(120+72);
-            tg.T.penup().turn(-90).move(150).turn(90).pendown().pencolor('blue').pensize(1);
-        }, 100);
     });
 
 

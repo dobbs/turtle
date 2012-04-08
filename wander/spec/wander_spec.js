@@ -13,13 +13,13 @@ describe('Turtle', function () {
     xit('should be able to tell one turtle to repeat the steps of another turtle');
 
     describe('turtle()', function () {
-        it('should set default direction and position', function () {
+        it('sets default direction and position', function () {
             expect(turtle.x).toEqual(0);
             expect(turtle.y).toEqual(0);
             expect(turtle.direction).toEqual(-Math.PI/2);
         });
 
-        it('should use given direction and position as defaults', function () {
+        it('uses given direction and position as defaults', function () {
             turtle = turtlespace.turtle({direction:Math.PI/3, x:50, y:40});
             expect(turtle.x).toEqual(50);
             expect(turtle.y).toEqual(40);
@@ -28,19 +28,19 @@ describe('Turtle', function () {
     });
 
     describe('change({direction:radians})', function () {
-        it('should change turtle.change().direction', function () {
+        it('changes turtle.change().direction', function () {
             turtle.change({direction:Math.PI/6});
             expect(turtle.direction).toEqual(Math.PI/6);
         });
 
-        it('should convert negative radians', function () {
+        it('converts negative radians', function () {
             turtle.change({direction:-Math.PI/6});
             expect(turtle.direction).toEqual(11*Math.PI/6);
         });
     });
 
     describe('change({x:pixels, y:pixels})', function () {
-        it('should change turtle.x and turtle.y', function () {
+        it('changes turtle.x and turtle.y', function () {
             turtle.change({x:5, y:20});
             expect([turtle.x,turtle.y]).toEqual([5, 20]);
         });
@@ -69,7 +69,7 @@ describe('Turtle', function () {
     });
 
     describe('turn(degrees)', function () {
-        it('should change turtle.direction relative to its current direction', function () {
+        it('changes turtle.direction relative to its current direction', function () {
             turtle.turn(Math.PI/2 /*90degrees*/);
             expect(turtle.direction).toEqual(0);
             turtle.turn(Math.PI/6 /*30degrees*/);
@@ -82,7 +82,7 @@ describe('Turtle', function () {
     });
 
     describe('move(pixels)', function () {
-        it('should move the turtle location <pixels> in its current direction', function () {
+        it('moves the turtle location <pixels> in its current direction', function () {
             var smallest_angle_of_3_4_5_right_triangle = 37*Math.PI/180;
             turtle.change({direction:smallest_angle_of_3_4_5_right_triangle});
             turtle.move(50);

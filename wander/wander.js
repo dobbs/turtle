@@ -14,7 +14,7 @@ var turtlespace = turtlespace || {};
             concludeFn();
     }
 
-    $.extend(turtlespace, {
+    $.extend(true, turtlespace, {
         named: {
             origin: {
                 name:'origin',
@@ -230,10 +230,9 @@ var turtlespace = turtlespace || {};
             });
         },
 
-        update_ui: function update_ui() {
-            var controls = turtlespace.controls();
-            function drawTurtleShape(context, turtle_name) {
-                var position = turtlespace.history[turtle_name][0];
+        draw: {
+            turtleShape: function turtleShape (context, turtle_name) {
+                var position = (turtlespace.history[turtle_name] || [])[0];
                 if (position) {
                     context.translate(position.state.x, position.state.y);
                     context.rotate(position.state.direction);
@@ -250,7 +249,24 @@ var turtlespace = turtlespace || {};
                 context.lineTo(0 - nudge, -5);
                 context.closePath();
                 context.stroke();
-            }
+            },
+            turtlePath: function turtlePath (context, turtle_name) {
+                if (!turtle_name)
+                    turtle_name = 'turtle';
+                context.beginPath();
+                context.moveTo(0, 0);
+                var pen = $.extend({}, turtlespace.named.origin, {
+                    name: 'turtle_pen',
+                    after_move: function after_move(that) {context.lineTo(that.x, that.y);},
+                });
+                turtlespace.repeat_history(pen, turtle_name);
+                context.stroke();
+                turtlespace.draw.turtleShape(context, turtle_name);
+            },
+        }, 
+
+        update_ui: function update_ui() {
+            var controls = turtlespace.controls();
             function turtlePathBoundingBox(turtle_name) {
                 var MAXINT = Math.pow(2,52); //intentionally half the max allowed by ECMAscript
                 var Xmin = 0, Ymin = 0, Xmax = 0, Ymax = 0;
@@ -289,25 +305,7 @@ var turtlespace = turtlespace || {};
                 });
                 turtlespace.repeat_history(pen, turtle_name);
                 context.stroke();
-                drawTurtleShape(context, turtle_name);
-                context.restore();
-            }
-            function drawTurtlePath(context, turtle_name) {
-                if (!turtle_name)
-                    turtle_name = 'turtle';
-                var canvas = context.canvas;
-                context.clearRect(0, 0, canvas.width, canvas.height);
-                context.save();
-                context.translate(canvas.width/2, canvas.height/2);
-                context.beginPath();
-                context.moveTo(0, 0);
-                var pen = $.extend({}, turtlespace.named.origin, {
-                    name: 'turtle_pen',
-                    after_move: function after_move(that) {context.lineTo(that.x, that.y);},
-                });
-                turtlespace.repeat_history(pen, turtle_name);
-                context.stroke();
-                drawTurtleShape(context, turtle_name);
+                turtlespace.draw.turtleShape(context, turtle_name);
                 context.restore();
             }
             function drawTurnsizeNumerator(context) {
@@ -395,7 +393,13 @@ var turtlespace = turtlespace || {};
             withTurnTransform(denominator.getContext('2d'), 8, drawTurnsizeDenominator);
 
             var playground = $('.tracks .turtle').get(0);
-            drawTurtlePath(playground.getContext('2d'));
+            var context = playground.getContext('2d');
+            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+            var canvas = context.canvas;
+            context.save();
+            context.translate(canvas.width/2, canvas.height/2);
+            turtlespace.draw.turtlePath(context);
+            context.restore();
 
             drawHistories($('.history'));
 

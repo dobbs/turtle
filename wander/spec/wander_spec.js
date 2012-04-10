@@ -176,3 +176,58 @@ describe('controls', function () {
         expect(turtlespace.named.controls.turnsize_numerator).toEqual(1);
     });
 });
+
+describe('draw', function () {
+    var turtle, context;
+    beforeEach(function  () {
+        turtle = turtlespace.turtle();
+        context = {
+            clearRect: jasmine.createSpy('clearRect'),
+            translate: jasmine.createSpy('translate'),
+            rotate: jasmine.createSpy('rotate'),
+            beginPath: jasmine.createSpy('beginPath'),
+            lineTo: jasmine.createSpy('lineTo'),
+            moveTo: jasmine.createSpy('moveTo'),
+            closePath: jasmine.createSpy('closePath'),
+            stroke: jasmine.createSpy('stroke'),
+            canvas: {
+                width: 200,
+                height: 100
+            }
+        };
+    });
+    describe('turtleShape', function  () {
+        it('at the origin by default', function () {
+            turtlespace.draw.turtleShape(context);
+            expect(context.translate).toHaveBeenCalledWith(0, 0);
+            expect(context.rotate).toHaveBeenCalledWith(-Math.PI/2);
+        });
+        it('at the end of the given turtle_path', function () {
+            turtle.turn(Math.PI/2).move(30);
+            turtlespace.draw.turtleShape(context, turtle.name);
+            expect(context.translate).toHaveBeenCalledWith(30, 0);
+            expect(context.rotate).toHaveBeenCalledWith(0);
+        });
+        it('with three line segments', function () {
+            turtlespace.draw.turtleShape(context);
+            expect(context.lineTo.callCount).toEqual(3);
+            expect(context.stroke).toHaveBeenCalled();
+        });
+    });
+    describe('turtlePath', function () {
+        beforeEach(function  () {
+            spyOn(turtlespace.draw, 'turtleShape');
+            turtlespace.history.turtle = [];
+            turtle.move(20).turn(Math.PI/2).move(50).move(10);
+        });
+        it('follows the turtle history', function () {
+            turtlespace.draw.turtlePath(context, turtle.name);
+            expect(context.lineTo.callCount).toEqual(3);
+            expect(context.lineTo.mostRecentCall.args).toEqual([60, -20]);
+        });
+        it('also draws the turtleShape', function () {
+            turtlespace.draw.turtlePath(context, turtle.name);
+            expect(turtlespace.draw.turtleShape).toHaveBeenCalledWith(context, turtle.name);
+        });
+    });
+});

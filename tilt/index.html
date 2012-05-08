@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" manifest="tilt.manifest">
+<head>
+<title>tilt</title>
+<script type="text/javascript" src="underscore.js"></script>
+<style type="text/css">
+canvas {border: 1px solid black;}
+#x_chart {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+}
+#y_chart {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+}
+#z_chart {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+}
+</style>
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+</head>
+<body>
+<canvas id="x_chart" width="300" height="20"></canvas>
+<canvas id="y_chart" width="20" height="300"></canvas>
+<canvas id="z_chart" width="277" height="277"></canvas>
+<script type="text/javascript" src="tilt.js"></script>
+</body>
+</html>

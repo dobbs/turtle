@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" manifest="touch.manifest">
+<head>
+<title>touch</title>
+<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="touch.js"></script>
+<style type="text/css">
+canvas {border: 1px solid black;}
+button {
+  padding: 15px 10px;
+  border-radius: 5px;
+  background-color: #AAA;
+  position: absolute;
+  bottom: 0;
+}
+#chart {position: absolute; top: 8px;}
+</style>
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+</head>
+<body>
+<canvas id="chart" width="300" height="100"></canvas>
+<canvas id="touch" width="300" height="300"></canvas>
+<button>replay</button>
+</body>
+</html>

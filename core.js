@@ -277,7 +277,7 @@
             return this;
         },
         pensize: function pensize(size) {
-            this.queue.push(function pensize(turtle) {turtle.pensize(color); return;});
+            this.queue.push(function pensize(turtle) {turtle.pensize(size); return;});
             return this;
         },
         clear: function clear() {
